@@ -6,6 +6,11 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { deflateSync } from "node:zlib";
 import { z } from "zod/v4";
+import {
+  PRIVATE_SECURITY_SCHEMES,
+  PUBLIC_SECURITY_SCHEMES,
+  verifyWorkOSAuth,
+} from "./auth.js";
 import type { CheckpointStore } from "./checkpoint-store.js";
 
 /** Maximum allowed size for element/data input strings (5 MB). */
@@ -401,6 +406,86 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const resourceUri = "ui://excalidraw/mcp-app.html";
 
+  const createDiagramResult = async (elements: string): Promise<CallToolResult> => {
+    if (elements.length > MAX_INPUT_BYTES) {
+      return {
+        content: [{ type: "text", text: `Elements input exceeds ${MAX_INPUT_BYTES} byte limit. Reduce the number of elements or use checkpoints to build incrementally.` }],
+        isError: true,
+      };
+    }
+    let parsed: any[];
+    try {
+      parsed = JSON.parse(elements);
+    } catch (e) {
+      return {
+        content: [{ type: "text", text: `Invalid JSON in elements: ${(e as Error).message}. Ensure no comments, no trailing commas, and proper quoting.` }],
+        isError: true,
+      };
+    }
+
+    // Resolve restoreCheckpoint references and save fully resolved state
+    const restoreEl = parsed.find((el: any) => el.type === "restoreCheckpoint");
+    let resolvedElements: any[];
+
+    if (restoreEl?.id) {
+      const base = await store.load(restoreEl.id);
+      if (!base) {
+        return {
+          content: [{ type: "text", text: `Checkpoint "${restoreEl.id}" not found — it may have expired or never existed. Please recreate the diagram from scratch.` }],
+          isError: true,
+        };
+      }
+
+      const deleteIds = new Set<string>();
+      for (const el of parsed) {
+        if (el.type === "delete") {
+          for (const id of String(el.ids ?? el.id).split(",")) deleteIds.add(id.trim());
+        }
+      }
+
+      const baseFiltered = base.elements.filter((el: any) =>
+        !deleteIds.has(el.id) && !deleteIds.has(el.containerId)
+      );
+      const newEls = parsed.filter((el: any) =>
+        el.type !== "restoreCheckpoint" && el.type !== "delete"
+      );
+      resolvedElements = [...baseFiltered, ...newEls];
+    } else {
+      resolvedElements = parsed.filter((el: any) => el.type !== "delete");
+    }
+
+    // Check camera aspect ratios — nudge toward 4:3
+    const cameras = parsed.filter((el: any) => el.type === "cameraUpdate");
+    const badRatio = cameras.find((c: any) => {
+      if (!c.width || !c.height) return false;
+      const ratio = c.width / c.height;
+      return Math.abs(ratio - 4 / 3) > 0.15;
+    });
+    const ratioHint = badRatio
+      ? `\nTip: your cameraUpdate used ${badRatio.width}x${badRatio.height} — try to stick with 4:3 aspect ratio (e.g. 400x300, 800x600) in future.`
+      : "";
+
+    const checkpointId = crypto.randomUUID().replace(/-/g, "").slice(0, 18);
+    await store.save(checkpointId, { elements: resolvedElements });
+    return {
+      content: [{ type: "text", text: `Diagram displayed! Checkpoint id: "${checkpointId}".
+If user asks to create a new diagram - simply create a new one from scratch.
+However, if the user wants to edit something on this diagram "${checkpointId}", take these steps:
+1) read widget context (using read_widget_context tool) to check if user made any manual edits first
+2) decide whether you want to make new diagram from scratch OR - use this one as starting checkpoint:
+  simply start from the first element [{"type":"restoreCheckpoint","id":"${checkpointId}"}, ...your new elements...]
+  this will use same diagram state as the user currently sees, including any manual edits they made in fullscreen, allowing you to add elements on top.
+  To remove elements, use: {"type":"delete","ids":"<id1>,<id2>"}${ratioHint}` }],
+      structuredContent: { checkpointId },
+    };
+  };
+
+  const authErrorResult = (message: string, challenge: string): CallToolResult => ({
+    content: [{ type: "text", text: message }],
+    _meta: { "mcp/www_authenticate": [challenge] },
+    isError: true,
+  });
+
   // ============================================================
   // Tool 1: read_me (call before drawing)
   // ============================================================
@@ -409,6 +494,7 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     {
       description: "Returns the Excalidraw element format reference with color palettes, examples, and tips. Call this BEFORE using create_view for the first time.",
       annotations: { readOnlyHint: true },
+      _meta: { securitySchemes: PUBLIC_SECURITY_SCHEMES },
     },
     async (): Promise<CallToolResult> => {
       return { content: [{ type: "text", text: RECALL_CHEAT_SHEET }] };
@@ -416,7 +502,35 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   );
 
   // ============================================================
-  // Tool 2: create_view (Excalidraw SVG)
+  // Tool 2: private_auth_status (protected WorkOS diagnostic)
+  // ============================================================
+  server.registerTool(
+    "private_auth_status",
+    {
+      title: "Private Auth Status",
+      description: "Protected diagnostic tool. Requires WorkOS AuthKit OAuth and returns the authenticated user context.",
+      annotations: { readOnlyHint: true },
+      _meta: { securitySchemes: PRIVATE_SECURITY_SCHEMES },
+    },
+    async (extra): Promise<CallToolResult> => {
+      const auth = await verifyWorkOSAuth(extra.requestInfo?.headers);
+      if (!auth.ok) return authErrorResult(auth.message, auth.challenge);
+
+      const displayName = auth.user.email ?? auth.user.name ?? auth.user.subject;
+      return {
+        content: [{ type: "text", text: `Authenticated via WorkOS AuthKit as ${displayName}.` }],
+        structuredContent: {
+          subject: auth.user.subject,
+          email: auth.user.email,
+          name: auth.user.name,
+          scopes: auth.user.scopes,
+        },
+      };
+    },
+  );
+
+  // ============================================================
+  // Tool 3: create_view (Excalidraw SVG)
   // ============================================================
   registerAppTool(server,
     "create_view",
@@ -431,85 +545,63 @@ Call read_me first to learn the element format.`,
         ),
       }),
       annotations: { readOnlyHint: true },
-      _meta: { ui: { resourceUri } },
+      _meta: {
+        ui: { resourceUri },
+        securitySchemes: PUBLIC_SECURITY_SCHEMES,
+      },
     },
-    async ({ elements }): Promise<CallToolResult> => {
-      if (elements.length > MAX_INPUT_BYTES) {
-        return {
-          content: [{ type: "text", text: `Elements input exceeds ${MAX_INPUT_BYTES} byte limit. Reduce the number of elements or use checkpoints to build incrementally.` }],
-          isError: true,
-        };
-      }
-      let parsed: any[];
-      try {
-        parsed = JSON.parse(elements);
-      } catch (e) {
-        return {
-          content: [{ type: "text", text: `Invalid JSON in elements: ${(e as Error).message}. Ensure no comments, no trailing commas, and proper quoting.` }],
-          isError: true,
-        };
-      }
+    async ({ elements }): Promise<CallToolResult> => createDiagramResult(elements),
+  );
 
-      // Resolve restoreCheckpoint references and save fully resolved state
-      const restoreEl = parsed.find((el: any) => el.type === "restoreCheckpoint");
-      let resolvedElements: any[];
+  // ============================================================
+  // Tool 4: create_private_view (Excalidraw SVG, WorkOS protected)
+  // ============================================================
+  registerAppTool(server,
+    "create_private_view",
+    {
+      title: "Draw Private Diagram",
+      description: `Renders a hand-drawn diagram using Excalidraw elements after WorkOS AuthKit OAuth succeeds.
+Use this to verify that a protected tool can coexist with public tools on the same MCP server.`,
+      inputSchema: z.object({
+        elements: z.string().describe(
+          "JSON array string of Excalidraw elements. Must be valid JSON — no comments, no trailing commas. Keep compact. Call read_me first for format reference."
+        ),
+      }),
+      annotations: { readOnlyHint: true },
+      _meta: {
+        ui: { resourceUri },
+        securitySchemes: PRIVATE_SECURITY_SCHEMES,
+      },
+    },
+    async ({ elements }, extra): Promise<CallToolResult> => {
+      const auth = await verifyWorkOSAuth(extra.requestInfo?.headers);
+      if (!auth.ok) return authErrorResult(auth.message, auth.challenge);
 
-      if (restoreEl?.id) {
-        const base = await store.load(restoreEl.id);
-        if (!base) {
-          return {
-            content: [{ type: "text", text: `Checkpoint "${restoreEl.id}" not found — it may have expired or never existed. Please recreate the diagram from scratch.` }],
-            isError: true,
-          };
-        }
+      const result = await createDiagramResult(elements);
+      if (result.isError) return result;
 
-        const deleteIds = new Set<string>();
-        for (const el of parsed) {
-          if (el.type === "delete") {
-            for (const id of String(el.ids ?? el.id).split(",")) deleteIds.add(id.trim());
-          }
-        }
-
-        const baseFiltered = base.elements.filter((el: any) =>
-          !deleteIds.has(el.id) && !deleteIds.has(el.containerId)
-        );
-        const newEls = parsed.filter((el: any) =>
-          el.type !== "restoreCheckpoint" && el.type !== "delete"
-        );
-        resolvedElements = [...baseFiltered, ...newEls];
-      } else {
-        resolvedElements = parsed.filter((el: any) => el.type !== "delete");
-      }
-
-      // Check camera aspect ratios — nudge toward 4:3
-      const cameras = parsed.filter((el: any) => el.type === "cameraUpdate");
-      const badRatio = cameras.find((c: any) => {
-        if (!c.width || !c.height) return false;
-        const ratio = c.width / c.height;
-        return Math.abs(ratio - 4 / 3) > 0.15;
-      });
-      const ratioHint = badRatio
-        ? `\nTip: your cameraUpdate used ${badRatio.width}x${badRatio.height} — try to stick with 4:3 aspect ratio (e.g. 400x300, 800x600) in future.`
-        : "";
-
-      const checkpointId = crypto.randomUUID().replace(/-/g, "").slice(0, 18);
-      await store.save(checkpointId, { elements: resolvedElements });
+      const displayName = auth.user.email ?? auth.user.name ?? auth.user.subject;
       return {
-        content: [{ type: "text", text: `Diagram displayed! Checkpoint id: "${checkpointId}".
-If user asks to create a new diagram - simply create a new one from scratch.
-However, if the user wants to edit something on this diagram "${checkpointId}", take these steps:
-1) read widget context (using read_widget_context tool) to check if user made any manual edits first
-2) decide whether you want to make new diagram from scratch OR - use this one as starting checkpoint:
-  simply start from the first element [{"type":"restoreCheckpoint","id":"${checkpointId}"}, ...your new elements...]
-  this will use same diagram state as the user currently sees, including any manual edits they made in fullscreen, allowing you to add elements on top.
-  To remove elements, use: {"type":"delete","ids":"<id1>,<id2>"}${ratioHint}` }],
-        structuredContent: { checkpointId },
+        ...result,
+        content: (result.content ?? []).map((item, index) => {
+          if (index !== 0 || item.type !== "text") return item;
+          return {
+            ...item,
+            text: `Authenticated via WorkOS AuthKit as ${displayName}.\n\n${item.text}`,
+          };
+        }),
+        structuredContent: {
+          ...(result.structuredContent ?? {}),
+          authenticatedSubject: auth.user.subject,
+          authenticatedEmail: auth.user.email,
+          authenticatedName: auth.user.name,
+        },
       };
     },
   );
 
   // ============================================================
-  // Tool 3: export_to_excalidraw (server-side proxy for CORS)
+  // Tool 5: export_to_excalidraw (server-side proxy for CORS)
   // Called by widget via app.callServerTool(), not by the model.
   // ============================================================
   registerAppTool(server,
@@ -601,7 +693,7 @@ However, if the user wants to edit something on this diagram "${checkpointId}", 
   );
 
   // ============================================================
-  // Tool 4: save_checkpoint (private — widget only, for user edits)
+  // Tool 6: save_checkpoint (private — widget only, for user edits)
   // ============================================================
   registerAppTool(server,
     "save_checkpoint",
@@ -627,7 +719,7 @@ However, if the user wants to edit something on this diagram "${checkpointId}", 
   );
 
   // ============================================================
-  // Tool 5: read_checkpoint (private — widget only)
+  // Tool 7: read_checkpoint (private — widget only)
   // ============================================================
   registerAppTool(server,
     "read_checkpoint",

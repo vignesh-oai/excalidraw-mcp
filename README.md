@@ -50,6 +50,22 @@ Example prompts:
 - "Draw a cute cat using excalidraw"
 - "Draw an architecture diagram showing a user connecting to an API server which talks to a database"
 
+## Mixed public and protected tool reference
+
+This fork also includes a ChatGPT Apps SDK auth reference:
+
+- `read_me` and `create_view` are public tools with `noauth` security metadata.
+- `private_auth_status` and `create_private_view` are protected tools with OAuth security metadata.
+- Protected tools return `_meta["mcp/www_authenticate"]` when no valid token is present.
+- `/.well-known/oauth-protected-resource` advertises WorkOS AuthKit as the authorization server.
+
+Configure these environment variables before deploying:
+
+```bash
+WORKOS_AUTHKIT_ISSUER=https://your-authkit-domain.authkit.app
+MCP_RESOURCE_URL=https://your-vercel-deployment.vercel.app
+```
+
 ## What are MCP Apps and how can I build one?
 
 Text responses can only go so far. Sometimes users need to interact with data, not just read about it. [MCP Apps](https://github.com/modelcontextprotocol/ext-apps/) is an official Model Context Protocol extension that lets servers return interactive HTML interfaces (data visualizations, forms, dashboards) that render directly in the chat.

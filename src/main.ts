@@ -10,6 +10,12 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import cors from "cors";
 import type { Request, Response } from "express";
+import {
+  fetchAuthorizationServerMetadata,
+  metadataCorsHeaders,
+  protectedResourceMetadata,
+  type HeaderBag,
+} from "./auth.js";
 import { FileCheckpointStore } from "./checkpoint-store.js";
 import { createServer } from "./server.js";
 
@@ -25,6 +31,31 @@ export async function startStreamableHTTPServer(
 
   const app = createMcpExpressApp({ host: "0.0.0.0" });
   app.use(cors());
+
+  const protectedResourcePaths = [
+    "/.well-known/oauth-protected-resource",
+    "/.well-known/oauth-protected-resource/mcp",
+  ];
+  const authorizationServerPaths = [
+    "/.well-known/oauth-authorization-server",
+    "/.well-known/oauth-authorization-server/mcp",
+  ];
+
+  app.options([...protectedResourcePaths, ...authorizationServerPaths], (_req: Request, res: Response) => {
+    res.set(metadataCorsHeaders()).status(204).send();
+  });
+
+  app.get(protectedResourcePaths, (req: Request, res: Response) => {
+    res.set(metadataCorsHeaders()).json(protectedResourceMetadata(req.headers as HeaderBag));
+  });
+
+  app.get(authorizationServerPaths, async (_req: Request, res: Response) => {
+    try {
+      res.set(metadataCorsHeaders()).json(await fetchAuthorizationServerMetadata());
+    } catch (error) {
+      res.status(500).set(metadataCorsHeaders()).json({ error: (error as Error).message });
+    }
+  });
 
   app.all("/mcp", async (req: Request, res: Response) => {
     const server = createServer();
