@@ -39,6 +39,12 @@ function normalizeUrl(value: string): string {
   return `${url.origin}${path}`;
 }
 
+function normalizeMcpResourceUrl(value: string): string {
+  const url = normalizeUrl(value);
+  const parsed = new URL(url);
+  return parsed.pathname === "/" ? new URL("/mcp", parsed.origin).toString() : url;
+}
+
 function getHeader(headers: HeaderBag | undefined, name: string): string | undefined {
   if (!headers) return undefined;
   const target = name.toLowerCase();
@@ -65,13 +71,13 @@ export function getResourceUrl(headers?: HeaderBag): string {
     env("MCP_PUBLIC_URL") ??
     env("VERCEL_PROJECT_PRODUCTION_URL") ??
     env("VERCEL_URL");
-  if (explicit) return normalizeUrl(explicit);
+  if (explicit) return normalizeMcpResourceUrl(explicit);
 
   const forwardedHost = getHeader(headers, "x-forwarded-host")?.split(",")[0]?.trim();
   const forwardedProto = getHeader(headers, "x-forwarded-proto")?.split(",")[0]?.trim();
   const host = forwardedHost ?? getHeader(headers, "host") ?? "localhost:3001";
   const proto = forwardedProto ?? (host.startsWith("localhost") ? "http" : "https");
-  return normalizeUrl(`${proto}://${host}`);
+  return normalizeMcpResourceUrl(`${proto}://${host}`);
 }
 
 export function getProtectedResourceMetadataUrl(headers?: HeaderBag): string {

@@ -20,22 +20,28 @@ function normalizeRequest(request: Request): Request {
     url.pathname = url.pathname.replace("/api/", "/");
   }
 
-  let normalized = url.toString() === request.url
-    ? request
-    : new Request(url.toString(), request);
+  const headers = new Headers(request.headers);
 
   if (url.pathname === "/mcp" && request.method === "POST") {
-    const accept = normalized.headers.get("accept") ?? "";
-    const acceptsJson = accept.includes("application/json") || accept.includes("*/*");
-    const acceptsSse = accept.includes("text/event-stream") || accept.includes("*/*");
+    const accept = headers.get("accept") ?? "";
+    const acceptsJson = accept.includes("application/json");
+    const acceptsSse = accept.includes("text/event-stream");
     if (!acceptsJson || !acceptsSse) {
-      const headers = new Headers(normalized.headers);
       headers.set("accept", "application/json, text/event-stream");
-      normalized = new Request(normalized, { headers });
     }
   }
 
-  return normalized;
+  const body = request.method === "GET" || request.method === "HEAD" ? undefined : request.body;
+  const init: RequestInit & { duplex?: "half" } = {
+    method: request.method,
+    headers,
+    body,
+    redirect: request.redirect,
+    signal: request.signal,
+  };
+
+  if (body) init.duplex = "half";
+  return new Request(url.toString(), init);
 }
 
 // Wrap to support both /mcp and /api/mcp (backward compat)
