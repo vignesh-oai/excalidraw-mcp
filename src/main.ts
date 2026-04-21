@@ -35,10 +35,14 @@ export async function startStreamableHTTPServer(
   const protectedResourcePaths = [
     "/.well-known/oauth-protected-resource",
     "/.well-known/oauth-protected-resource/mcp",
+    "/mcp/.well-known/oauth-protected-resource",
+    "/mcp/.well-known/oauth-protected-resource/mcp",
   ];
   const authorizationServerPaths = [
     "/.well-known/oauth-authorization-server",
     "/.well-known/oauth-authorization-server/mcp",
+    "/mcp/.well-known/oauth-authorization-server",
+    "/mcp/.well-known/oauth-authorization-server/mcp",
   ];
 
   app.options([...protectedResourcePaths, ...authorizationServerPaths], (_req: Request, res: Response) => {

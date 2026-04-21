@@ -609,7 +609,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     {
       description: "Upload diagram to excalidraw.com and return shareable URL.",
       inputSchema: { json: z.string().describe("Serialized Excalidraw JSON") },
-      _meta: { ui: { visibility: ["app"] } },
+      _meta: {
+        ui: { visibility: ["app"] },
+        securitySchemes: PUBLIC_SECURITY_SCHEMES,
+      },
     },
     async ({ json }): Promise<CallToolResult> => {
       if (json.length > MAX_INPUT_BYTES) {
@@ -700,7 +703,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     {
       description: "Update checkpoint with user-edited state.",
       inputSchema: { id: z.string(), data: z.string() },
-      _meta: { ui: { visibility: ["app"] } },
+      _meta: {
+        ui: { visibility: ["app"] },
+        securitySchemes: PUBLIC_SECURITY_SCHEMES,
+      },
     },
     async ({ id, data }): Promise<CallToolResult> => {
       if (data.length > MAX_INPUT_BYTES) {
@@ -726,7 +732,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     {
       description: "Read checkpoint state for restore.",
       inputSchema: { id: z.string() },
-      _meta: { ui: { visibility: ["app"] } },
+      _meta: {
+        ui: { visibility: ["app"] },
+        securitySchemes: PUBLIC_SECURITY_SCHEMES,
+      },
     },
     async ({ id }): Promise<CallToolResult> => {
       try {
