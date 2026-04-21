@@ -14,14 +14,33 @@ const mcpHandler = createMcpHandler(
   { basePath: "", maxDuration: 60, sessionIdGenerator: undefined },
 );
 
-// Wrap to support both /mcp and /api/mcp (backward compat)
-const handler = async (request: Request) => {
+function normalizeRequest(request: Request): Request {
   const url = new URL(request.url);
   if (url.pathname.startsWith("/api/")) {
     url.pathname = url.pathname.replace("/api/", "/");
-    return mcpHandler(new Request(url.toString(), request));
   }
-  return mcpHandler(request);
+
+  let normalized = url.toString() === request.url
+    ? request
+    : new Request(url.toString(), request);
+
+  if (url.pathname === "/mcp" && request.method === "POST") {
+    const accept = normalized.headers.get("accept") ?? "";
+    const acceptsJson = accept.includes("application/json") || accept.includes("*/*");
+    const acceptsSse = accept.includes("text/event-stream") || accept.includes("*/*");
+    if (!acceptsJson || !acceptsSse) {
+      const headers = new Headers(normalized.headers);
+      headers.set("accept", "application/json, text/event-stream");
+      normalized = new Request(normalized, { headers });
+    }
+  }
+
+  return normalized;
+}
+
+// Wrap to support both /mcp and /api/mcp (backward compat)
+const handler = async (request: Request) => {
+  return mcpHandler(normalizeRequest(request));
 };
 
 export { handler as GET, handler as POST, handler as DELETE };
