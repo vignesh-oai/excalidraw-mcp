@@ -408,6 +408,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const widgetToolMeta = {
     ui: { resourceUri },
     "openai/outputTemplate": resourceUri,
+    "openai/toolInvocation/invoking": "Rendering Excalidraw diagram",
+    "openai/toolInvocation/invoked": "Rendered Excalidraw diagram",
     "openai/widgetAccessible": true,
   };
 
@@ -782,6 +784,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
           mimeType: RESOURCE_MIME_TYPE,
           text: html,
           _meta: {
+            ...cspMeta,
             ui: {
               ...cspMeta.ui,
               prefersBorder: true,
