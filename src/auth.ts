@@ -39,12 +39,6 @@ function normalizeUrl(value: string): string {
   return `${url.origin}${path}`;
 }
 
-function normalizeMcpResourceUrl(value: string): string {
-  const url = normalizeUrl(value);
-  const parsed = new URL(url);
-  return parsed.pathname === "/" ? new URL("/mcp", parsed.origin).toString() : url;
-}
-
 function getHeader(headers: HeaderBag | undefined, name: string): string | undefined {
   if (!headers) return undefined;
   const target = name.toLowerCase();
@@ -71,13 +65,13 @@ export function getResourceUrl(headers?: HeaderBag): string {
     env("MCP_PUBLIC_URL") ??
     env("VERCEL_PROJECT_PRODUCTION_URL") ??
     env("VERCEL_URL");
-  if (explicit) return normalizeMcpResourceUrl(explicit);
+  if (explicit) return normalizeUrl(explicit);
 
   const forwardedHost = getHeader(headers, "x-forwarded-host")?.split(",")[0]?.trim();
   const forwardedProto = getHeader(headers, "x-forwarded-proto")?.split(",")[0]?.trim();
   const host = forwardedHost ?? getHeader(headers, "host") ?? "localhost:3001";
   const proto = forwardedProto ?? (host.startsWith("localhost") ? "http" : "https");
-  return normalizeMcpResourceUrl(`${proto}://${host}`);
+  return normalizeUrl(`${proto}://${host}`);
 }
 
 export function getProtectedResourceMetadataUrl(headers?: HeaderBag): string {
@@ -167,8 +161,6 @@ function audienceMatches(payload: JWTPayload, headers?: HeaderBag): boolean {
   const audiences =
     typeof payload.aud === "string" ? [payload.aud] : Array.isArray(payload.aud) ? payload.aud : [];
 
-  // WorkOS MCP tokens should carry the resource as the audience. If this tenant
-  // omits aud, we still allow signature, issuer, expiry, and scope checks to run.
   return audiences.length === 0 || audiences.includes(expected) || audiences.includes(getResourceUrl(headers));
 }
 
@@ -202,7 +194,7 @@ export async function verifyWorkOSAuth(headers?: HeaderBag): Promise<AuthResult>
 
   try {
     const { payload } = await jwtVerify(token, getJwks(issuer), { issuer });
-    if (!audienceMatches(payload, headers)) {
+    if ((env("WORKOS_EXPECTED_AUDIENCE") || env("MCP_EXPECTED_AUDIENCE")) && !audienceMatches(payload, headers)) {
       return {
         ok: false,
         message: "Authentication required: token audience does not match this MCP server.",
