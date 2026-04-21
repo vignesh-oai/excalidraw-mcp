@@ -405,6 +405,11 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const resourceUri = "ui://excalidraw/mcp-app.html";
+  const widgetToolMeta = {
+    ui: { resourceUri },
+    "openai/outputTemplate": resourceUri,
+    "openai/widgetAccessible": true,
+  };
 
   const createDiagramResult = async (elements: string): Promise<CallToolResult> => {
     if (elements.length > MAX_INPUT_BYTES) {
@@ -546,7 +551,7 @@ Call read_me first to learn the element format.`,
       }),
       annotations: { readOnlyHint: true },
       _meta: {
-        ui: { resourceUri },
+        ...widgetToolMeta,
         securitySchemes: PUBLIC_SECURITY_SCHEMES,
       },
     },
@@ -569,7 +574,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       }),
       annotations: { readOnlyHint: true },
       _meta: {
-        ui: { resourceUri },
+        ...widgetToolMeta,
         securitySchemes: PRIVATE_SECURITY_SCHEMES,
       },
     },
@@ -755,6 +760,12 @@ Use this to verify that a protected tool can coexist with public tools on the sa
         resourceDomains: ["https://esm.sh"],
         connectDomains: ["https://esm.sh"],
       },
+    },
+    "openai/widgetDescription": "Interactive Excalidraw diagram widget with editing, checkpoint, and export controls.",
+    "openai/widgetPrefersBorder": true,
+    "openai/widgetCSP": {
+      resource_domains: ["https://esm.sh"],
+      connect_domains: ["https://esm.sh"],
     },
   };
 
