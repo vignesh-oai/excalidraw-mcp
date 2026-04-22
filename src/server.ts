@@ -454,6 +454,23 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV21ConnectorNamedPrivateViewResourceUri = "connectors://asdk_app_69e88f7829f48191858a6aeef740ccd2/Excalidraw+MCP+Public+Prod+v21+Mixed_create_private_view";
   const generatedV21ConnectorCreateViewResourceUri = "connectors://asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_view";
   const generatedV21ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_private_view";
+  const generatedV26AppName = "Excalidraw MCP Public Prod v26 Clean 202604221014";
+  const generatedV26AppId = "asdk_app_69e89fb28fa481918aad0c5557e5773c";
+  const generatedV26LinkId = "link_69e89fd78e648191a1680f3ea99886d4";
+  const generatedV26ResourcePathCreateView = `${generatedV26AppName}_create_view`;
+  const generatedV26ResourcePathPrivateView = `${generatedV26AppName}_create_private_view`;
+  const generatedV26EncodedResourcePathCreateView = "Excalidraw+MCP+Public+Prod+v26+Clean+202604221014_create_view";
+  const generatedV26EncodedResourcePathPrivateView = "Excalidraw+MCP+Public+Prod+v26+Clean+202604221014_create_private_view";
+  const generatedV26ModelPathCreateView = `/${generatedV26AppName}/create_view`;
+  const generatedV26ModelPathPrivateView = `/${generatedV26AppName}/create_private_view`;
+  const generatedV26SlashResourcePathCreateView = `/${generatedV26AppId}/${generatedV26LinkId}/create_view`;
+  const generatedV26SlashResourcePathPrivateView = `/${generatedV26AppId}/${generatedV26LinkId}/create_private_view`;
+  const generatedV26CreateViewResourceUri = `${widgetDomain}/${generatedV26AppId}/${generatedV26LinkId}/create_view`;
+  const generatedV26PrivateViewResourceUri = `${widgetDomain}/${generatedV26AppId}/${generatedV26LinkId}/create_private_view`;
+  const generatedV26ConnectorNamedCreateViewResourceUri = `connectors://${generatedV26AppId}/${generatedV26ResourcePathCreateView}`;
+  const generatedV26ConnectorNamedPrivateViewResourceUri = `connectors://${generatedV26AppId}/${generatedV26ResourcePathPrivateView}`;
+  const generatedV26ConnectorCreateViewResourceUri = `connectors://${generatedV26AppId}/${generatedV26LinkId}/create_view`;
+  const generatedV26ConnectorPrivateViewResourceUri = `connectors://${generatedV26AppId}/${generatedV26LinkId}/create_private_view`;
   const generatedV14ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
@@ -858,6 +875,13 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === generatedV17ConnectorNamedCreateViewResourceUri ||
       uri === generatedV17ConnectorCreateViewResourceUri ||
       uri === generatedV17NestedConnectorCreateViewResourceUri ||
+      uri === generatedV26ResourcePathCreateView ||
+      uri === generatedV26EncodedResourcePathCreateView ||
+      uri === generatedV26ModelPathCreateView ||
+      uri === generatedV26SlashResourcePathCreateView ||
+      uri === generatedV26CreateViewResourceUri ||
+      uri === generatedV26ConnectorNamedCreateViewResourceUri ||
+      uri === generatedV26ConnectorCreateViewResourceUri ||
       isCreateViewUri
     ) return createViewWidgetMeta;
     if (
@@ -879,6 +903,13 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === generatedV17ConnectorNamedPrivateViewResourceUri ||
       uri === generatedV17ConnectorPrivateViewResourceUri ||
       uri === generatedV17NestedConnectorPrivateViewResourceUri ||
+      uri === generatedV26ResourcePathPrivateView ||
+      uri === generatedV26EncodedResourcePathPrivateView ||
+      uri === generatedV26ModelPathPrivateView ||
+      uri === generatedV26SlashResourcePathPrivateView ||
+      uri === generatedV26PrivateViewResourceUri ||
+      uri === generatedV26ConnectorNamedPrivateViewResourceUri ||
+      uri === generatedV26ConnectorPrivateViewResourceUri ||
       isPrivateViewUri
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
@@ -914,6 +945,20 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw v21 Connector Named Private View Widget", uri: generatedV21ConnectorNamedPrivateViewResourceUri },
     { name: "Excalidraw v21 Connector Link Create View Widget", uri: generatedV21ConnectorCreateViewResourceUri },
     { name: "Excalidraw v21 Connector Link Private View Widget", uri: generatedV21ConnectorPrivateViewResourceUri },
+    { name: "Excalidraw v26 Resource Path Create View Widget", uri: generatedV26ResourcePathCreateView },
+    { name: "Excalidraw v26 Resource Path Private View Widget", uri: generatedV26ResourcePathPrivateView },
+    { name: "Excalidraw v26 Encoded Resource Path Create View Widget", uri: generatedV26EncodedResourcePathCreateView },
+    { name: "Excalidraw v26 Encoded Resource Path Private View Widget", uri: generatedV26EncodedResourcePathPrivateView },
+    { name: "Excalidraw v26 Model Path Create View Widget", uri: generatedV26ModelPathCreateView },
+    { name: "Excalidraw v26 Model Path Private View Widget", uri: generatedV26ModelPathPrivateView },
+    { name: "Excalidraw v26 Slash Link Create View Widget", uri: generatedV26SlashResourcePathCreateView },
+    { name: "Excalidraw v26 Slash Link Private View Widget", uri: generatedV26SlashResourcePathPrivateView },
+    { name: "Excalidraw v26 Hosted Link Create View Widget", uri: generatedV26CreateViewResourceUri },
+    { name: "Excalidraw v26 Hosted Link Private View Widget", uri: generatedV26PrivateViewResourceUri },
+    { name: "Excalidraw v26 Connector Named Create View Widget", uri: generatedV26ConnectorNamedCreateViewResourceUri },
+    { name: "Excalidraw v26 Connector Named Private View Widget", uri: generatedV26ConnectorNamedPrivateViewResourceUri },
+    { name: "Excalidraw v26 Connector Link Create View Widget", uri: generatedV26ConnectorCreateViewResourceUri },
+    { name: "Excalidraw v26 Connector Link Private View Widget", uri: generatedV26ConnectorPrivateViewResourceUri },
   ];
 
   const additionalContentAliasesForUri = (uri: string): string[] => {
@@ -933,6 +978,13 @@ Use this to verify that a protected tool can coexist with public tools on the sa
         generatedV21SlashResourcePathPrivateView,
         generatedV21ConnectorNamedPrivateViewResourceUri,
         generatedV21ConnectorPrivateViewResourceUri,
+        generatedV26ResourcePathPrivateView,
+        generatedV26EncodedResourcePathPrivateView,
+        generatedV26ModelPathPrivateView,
+        generatedV26SlashResourcePathPrivateView,
+        generatedV26PrivateViewResourceUri,
+        generatedV26ConnectorNamedPrivateViewResourceUri,
+        generatedV26ConnectorPrivateViewResourceUri,
       ];
     }
 
@@ -945,6 +997,13 @@ Use this to verify that a protected tool can coexist with public tools on the sa
         generatedV21SlashResourcePathCreateView,
         generatedV21ConnectorNamedCreateViewResourceUri,
         generatedV21ConnectorCreateViewResourceUri,
+        generatedV26ResourcePathCreateView,
+        generatedV26EncodedResourcePathCreateView,
+        generatedV26ModelPathCreateView,
+        generatedV26SlashResourcePathCreateView,
+        generatedV26CreateViewResourceUri,
+        generatedV26ConnectorNamedCreateViewResourceUri,
+        generatedV26ConnectorCreateViewResourceUri,
       ];
     }
 
