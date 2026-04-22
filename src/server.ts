@@ -800,7 +800,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === legacyUiCreateViewResourceUri ||
       uri === legacyV4CreateViewResourceUri ||
       uri === generatedV7CreateViewResourceUri ||
-      uri.endsWith("/create_view")
+      uri.endsWith("create_view")
     ) return createViewWidgetMeta;
     if (
       uri === uiPrivateViewResourceUri ||
@@ -808,7 +808,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === legacyUiPrivateViewResourceUri ||
       uri === legacyV4PrivateViewResourceUri ||
       uri === generatedV7PrivateViewResourceUri ||
-      uri.endsWith("/create_private_view")
+      uri.endsWith("create_private_view")
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
   };
@@ -919,6 +919,36 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     {
       name: "Excalidraw Connector Private View Widget",
       uriTemplate: "connectors://{appId}/{linkId}/create_private_view",
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Connector Generated Create View Widget",
+      uriTemplate: "connectors://{connectionAppId}/{appId}/{linkId}/create_view",
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Connector Generated Private View Widget",
+      uriTemplate: "connectors://{connectionAppId}/{appId}/{linkId}/create_private_view",
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Named Create View Widget",
+      uriTemplate: `${widgetDomain}/{resourceName}_create_view`,
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Named Private View Widget",
+      uriTemplate: `${widgetDomain}/{resourceName}_create_private_view`,
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Connector Named Create View Widget",
+      uriTemplate: "connectors://{appId}/{resourceName}_create_view",
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Connector Named Private View Widget",
+      uriTemplate: "connectors://{appId}/{resourceName}_create_private_view",
       configUri: hostedPrivateViewResourceUri,
     },
   ];
