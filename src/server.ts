@@ -435,6 +435,12 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV17NamedPrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/Excalidraw+MCP+Public+Prod+v17+Fetch_create_private_view";
   const generatedV17CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_view";
   const generatedV17PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
+  const generatedV17ConnectorNamedCreateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/Excalidraw+MCP+Public+Prod+v17+Fetch_create_view";
+  const generatedV17ConnectorNamedPrivateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/Excalidraw+MCP+Public+Prod+v17+Fetch_create_private_view";
+  const generatedV17ConnectorCreateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_view";
+  const generatedV17ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
+  const generatedV17NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_view";
+  const generatedV17NestedConnectorPrivateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
   const generatedV14ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
@@ -834,6 +840,11 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uriWithoutQuery === generatedV14CreateViewResourceUri ||
       uri === generatedV14ConnectorCreateViewResourceUri ||
       uri === generatedV14NestedConnectorCreateViewResourceUri ||
+      uri === generatedV17NamedCreateViewResourceUri ||
+      uri === generatedV17CreateViewResourceUri ||
+      uri === generatedV17ConnectorNamedCreateViewResourceUri ||
+      uri === generatedV17ConnectorCreateViewResourceUri ||
+      uri === generatedV17NestedConnectorCreateViewResourceUri ||
       isCreateViewUri
     ) return createViewWidgetMeta;
     if (
@@ -850,6 +861,11 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uriWithoutQuery === generatedV14PrivateViewResourceUri ||
       uri === generatedV14ConnectorPrivateViewResourceUri ||
       uri === generatedV14NestedConnectorPrivateViewResourceUri ||
+      uri === generatedV17NamedPrivateViewResourceUri ||
+      uri === generatedV17PrivateViewResourceUri ||
+      uri === generatedV17ConnectorNamedPrivateViewResourceUri ||
+      uri === generatedV17ConnectorPrivateViewResourceUri ||
+      uri === generatedV17NestedConnectorPrivateViewResourceUri ||
       isPrivateViewUri
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
@@ -893,6 +909,16 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Private View Generated v14 Widget", uri: generatedV14PrivateViewResourceUri },
     { name: "Excalidraw Create View Generated v14 Widget v18", uri: generatedV14CreateViewOutputTemplateUri },
     { name: "Excalidraw Private View Generated v14 Widget v18", uri: generatedV14PrivateViewOutputTemplateUri },
+    { name: "Excalidraw Create View Generated v17 Widget", uri: generatedV17CreateViewResourceUri },
+    { name: "Excalidraw Private View Generated v17 Widget", uri: generatedV17PrivateViewResourceUri },
+    { name: "Excalidraw Named Create View Generated v17 Widget", uri: generatedV17NamedCreateViewResourceUri },
+    { name: "Excalidraw Named Private View Generated v17 Widget", uri: generatedV17NamedPrivateViewResourceUri },
+    { name: "Excalidraw Connector Named Create View Generated v17 Widget", uri: generatedV17ConnectorNamedCreateViewResourceUri },
+    { name: "Excalidraw Connector Named Private View Generated v17 Widget", uri: generatedV17ConnectorNamedPrivateViewResourceUri },
+    { name: "Excalidraw Connector Create View Generated v17 Widget", uri: generatedV17ConnectorCreateViewResourceUri },
+    { name: "Excalidraw Connector Private View Generated v17 Widget", uri: generatedV17ConnectorPrivateViewResourceUri },
+    { name: "Excalidraw Nested Connector Create View Generated v17 Widget", uri: generatedV17NestedConnectorCreateViewResourceUri },
+    { name: "Excalidraw Nested Connector Private View Generated v17 Widget", uri: generatedV17NestedConnectorPrivateViewResourceUri },
     { name: "Excalidraw Connector Create View Generated v14 Widget", uri: generatedV14ConnectorCreateViewResourceUri },
     { name: "Excalidraw Connector Private View Generated v14 Widget", uri: generatedV14ConnectorPrivateViewResourceUri },
     { name: "Excalidraw Nested Connector Create View Generated v14 Widget", uri: generatedV14NestedConnectorCreateViewResourceUri },
@@ -915,6 +941,12 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       generatedV17NamedPrivateViewResourceUri,
       generatedV17CreateViewResourceUri,
       generatedV17PrivateViewResourceUri,
+      generatedV17ConnectorNamedCreateViewResourceUri,
+      generatedV17ConnectorNamedPrivateViewResourceUri,
+      generatedV17ConnectorCreateViewResourceUri,
+      generatedV17ConnectorPrivateViewResourceUri,
+      generatedV17NestedConnectorCreateViewResourceUri,
+      generatedV17NestedConnectorPrivateViewResourceUri,
       generatedV14ConnectorCreateViewResourceUri,
       generatedV14ConnectorPrivateViewResourceUri,
       generatedV14NestedConnectorCreateViewResourceUri,
