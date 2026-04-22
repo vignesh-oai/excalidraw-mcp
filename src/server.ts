@@ -977,6 +977,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
         },
       });
       const contentUris = new Set([
+        ...(uri.startsWith("/") ? [uri] : []),
         canonicalContentUriForUri(uri),
         ...additionalContentAliasesForUri(uri).filter(isAdvertisableContentUri),
       ]);
