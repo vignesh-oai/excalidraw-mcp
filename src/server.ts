@@ -441,6 +441,10 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV17ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
   const generatedV17NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_view";
   const generatedV17NestedConnectorPrivateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
+  const generatedV17ResourcePathCreateView = "Excalidraw+MCP+Public+Prod+v17+Fetch_create_view";
+  const generatedV17ResourcePathPrivateView = "Excalidraw+MCP+Public+Prod+v17+Fetch_create_private_view";
+  const generatedV17SlashResourcePathCreateView = "/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_view";
+  const generatedV17SlashResourcePathPrivateView = "/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
   const generatedV14ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
@@ -845,6 +849,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === generatedV17ConnectorNamedCreateViewResourceUri ||
       uri === generatedV17ConnectorCreateViewResourceUri ||
       uri === generatedV17NestedConnectorCreateViewResourceUri ||
+      uri === generatedV17ResourcePathCreateView ||
+      uri === generatedV17SlashResourcePathCreateView ||
       isCreateViewUri
     ) return createViewWidgetMeta;
     if (
@@ -866,6 +872,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === generatedV17ConnectorNamedPrivateViewResourceUri ||
       uri === generatedV17ConnectorPrivateViewResourceUri ||
       uri === generatedV17NestedConnectorPrivateViewResourceUri ||
+      uri === generatedV17ResourcePathPrivateView ||
+      uri === generatedV17SlashResourcePathPrivateView ||
       isPrivateViewUri
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
@@ -947,6 +955,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       generatedV17ConnectorPrivateViewResourceUri,
       generatedV17NestedConnectorCreateViewResourceUri,
       generatedV17NestedConnectorPrivateViewResourceUri,
+      generatedV17ResourcePathCreateView,
+      generatedV17ResourcePathPrivateView,
+      generatedV17SlashResourcePathCreateView,
+      generatedV17SlashResourcePathPrivateView,
       generatedV14ConnectorCreateViewResourceUri,
       generatedV14ConnectorPrivateViewResourceUri,
       generatedV14NestedConnectorCreateViewResourceUri,
