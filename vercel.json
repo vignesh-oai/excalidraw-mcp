@@ -16,7 +16,8 @@
     { "source": "/mcp/.well-known/oauth-authorization-server/mcp", "destination": "/api/oauth-authorization-server" },
     { "source": "/mcp", "destination": "/api/mcp" },
     { "source": "/sse", "destination": "/api/mcp" },
-    { "source": "/message", "destination": "/api/mcp" }
+    { "source": "/message", "destination": "/api/mcp" },
+    { "source": "/asdk_app_:appId/link_:linkId/:tool", "destination": "/api/widget-template" }
   ],
   "headers": [
     {
