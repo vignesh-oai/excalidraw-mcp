@@ -975,7 +975,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
           },
         },
       });
-      const contentUris = new Set([canonicalContentUriForUri(uri), ...additionalContentAliasesForUri(uri)]);
+      const contentUris = new Set([
+        canonicalContentUriForUri(uri),
+        ...additionalContentAliasesForUri(uri).filter(isAdvertisableContentUri),
+      ]);
       return {
         contents: [...contentUris].map(contentForUri),
       };
