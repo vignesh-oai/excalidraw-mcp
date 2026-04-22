@@ -405,7 +405,7 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const templateVersion = "v18";
+  const templateVersion = "v19";
   const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
   const uiCreateViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
   const uiPrivateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
@@ -830,8 +830,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uriWithoutQuery === generatedV14CreateViewResourceUri ||
       uri === generatedV14ConnectorCreateViewResourceUri ||
       uri === generatedV14NestedConnectorCreateViewResourceUri ||
-      uriWithoutQuery.endsWith("create_view") ||
-      uriWithoutQuery.endsWith("create_view_v18")
+      /(?:^|[/_])create_view(?:_v\d+)?$/.test(uriWithoutQuery)
     ) return createViewWidgetMeta;
     if (
       uri === uiPrivateViewResourceUri ||
@@ -847,8 +846,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uriWithoutQuery === generatedV14PrivateViewResourceUri ||
       uri === generatedV14ConnectorPrivateViewResourceUri ||
       uri === generatedV14NestedConnectorPrivateViewResourceUri ||
-      uriWithoutQuery.endsWith("create_private_view") ||
-      uriWithoutQuery.endsWith("create_private_view_v18")
+      /(?:^|[/_])create_private_view(?:_v\d+)?$/.test(uriWithoutQuery)
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
   };
@@ -896,7 +894,40 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   ];
 
   const additionalContentAliasesForUri = (_uri: string): string[] => {
-    return [];
+    const generatedV14CreateViewPath = pathAndSearch(generatedV14CreateViewResourceUri);
+    const generatedV14PrivateViewPath = pathAndSearch(generatedV14PrivateViewResourceUri);
+    const generatedV14CreateViewVersionedPath = pathAndSearch(generatedV14CreateViewOutputTemplateUri);
+    const generatedV14PrivateViewVersionedPath = pathAndSearch(generatedV14PrivateViewOutputTemplateUri);
+    const appDisplayName = "Excalidraw MCP Public Prod v14 Hosted";
+    const appDisplayNamePlus = appDisplayName.replaceAll(" ", "+");
+    return [
+      uiCreateViewResourceUri,
+      uiPrivateViewResourceUri,
+      hostedCreateViewResourceUri,
+      hostedPrivateViewResourceUri,
+      generatedV14CreateViewResourceUri,
+      generatedV14PrivateViewResourceUri,
+      generatedV14CreateViewOutputTemplateUri,
+      generatedV14PrivateViewOutputTemplateUri,
+      generatedV14ConnectorCreateViewResourceUri,
+      generatedV14ConnectorPrivateViewResourceUri,
+      generatedV14NestedConnectorCreateViewResourceUri,
+      generatedV14NestedConnectorPrivateViewResourceUri,
+      generatedV14CreateViewPath,
+      generatedV14PrivateViewPath,
+      generatedV14CreateViewPath.slice(1),
+      generatedV14PrivateViewPath.slice(1),
+      generatedV14CreateViewVersionedPath,
+      generatedV14PrivateViewVersionedPath,
+      generatedV14CreateViewVersionedPath.slice(1),
+      generatedV14PrivateViewVersionedPath.slice(1),
+      `${appDisplayName}_create_view`,
+      `${appDisplayName}_create_private_view`,
+      `${appDisplayNamePlus}_create_view`,
+      `${appDisplayNamePlus}_create_private_view`,
+      `/${appDisplayName}_create_view`,
+      `/${appDisplayName}_create_private_view`,
+    ];
   };
 
   const canonicalContentUriForUri = (uri: string): string => {
@@ -906,16 +937,15 @@ Use this to verify that a protected tool can coexist with public tools on the sa
 
   const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
       const html = await fs.readFile(path.join(distDir, "mcp-app.html"), "utf-8");
-      const toolMeta = metaForResourceUri(uri);
       const contentForUri = (contentUri: string) => ({
         uri: contentUri,
         mimeType: RESOURCE_MIME_TYPE,
         text: html,
         _meta: {
-          ...toolMeta,
+          ...metaForResourceUri(contentUri),
           ...cspMeta,
           ui: {
-            ...toolMeta.ui,
+            ...metaForResourceUri(contentUri).ui,
             ...cspMeta.ui,
             prefersBorder: true,
             permissions: { clipboardWrite: {} },
