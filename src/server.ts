@@ -405,7 +405,7 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const templateVersion = "v10";
+  const templateVersion = "v12";
   const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
   const uiCreateViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
   const uiPrivateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
@@ -426,8 +426,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     "openai/widgetAccessible": true,
   });
   const widgetToolMeta = makeWidgetToolMeta(resourceUri);
-  const createViewWidgetMeta = makeWidgetToolMeta(hostedCreateViewResourceUri, uiCreateViewResourceUri);
-  const privateViewWidgetMeta = makeWidgetToolMeta(hostedPrivateViewResourceUri, uiPrivateViewResourceUri);
+  const createViewWidgetMeta = makeWidgetToolMeta(uiCreateViewResourceUri);
+  const privateViewWidgetMeta = makeWidgetToolMeta(uiPrivateViewResourceUri);
 
   const createDiagramResult = async (elements: string, toolMeta = createViewWidgetMeta): Promise<CallToolResult> => {
     if (elements.length > MAX_INPUT_BYTES) {
@@ -912,6 +912,16 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       configUri: hostedPrivateViewResourceUri,
     },
     {
+      name: "Excalidraw MCP Path Generated Create View Widget",
+      uriTemplate: `${widgetDomain}/mcp/{appId}/{linkId}/create_view`,
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
+      name: "Excalidraw MCP Path Generated Private View Widget",
+      uriTemplate: `${widgetDomain}/mcp/{appId}/{linkId}/create_private_view`,
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
       name: "Excalidraw Connector Create View Widget",
       uriTemplate: "connectors://{appId}/{linkId}/create_view",
       configUri: hostedCreateViewResourceUri,
@@ -939,6 +949,16 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     {
       name: "Excalidraw Named Private View Widget",
       uriTemplate: `${widgetDomain}/{resourceName}_create_private_view`,
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
+      name: "Excalidraw MCP Path Named Create View Widget",
+      uriTemplate: `${widgetDomain}/mcp/{resourceName}_create_view`,
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
+      name: "Excalidraw MCP Path Named Private View Widget",
+      uriTemplate: `${widgetDomain}/mcp/{resourceName}_create_private_view`,
       configUri: hostedPrivateViewResourceUri,
     },
     {
