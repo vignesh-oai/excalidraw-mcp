@@ -886,6 +886,13 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     return [];
   };
 
+  const canonicalContentUriForUri = (uri: string): string => {
+    const toolMeta = metaForResourceUri(uri);
+    if (toolMeta === createViewWidgetMeta) return generatedV14CreateViewResourceUri;
+    if (toolMeta === privateViewWidgetMeta) return generatedV14PrivateViewResourceUri;
+    return uri;
+  };
+
   const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
       const html = await fs.readFile(path.join(distDir, "mcp-app.html"), "utf-8");
       const toolMeta = metaForResourceUri(uri);
@@ -904,7 +911,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
           },
         },
       });
-      const contentUris = new Set([uri, ...additionalContentAliasesForUri(uri)]);
+      const contentUris = new Set([canonicalContentUriForUri(uri), ...additionalContentAliasesForUri(uri)]);
       return {
         contents: [...contentUris].map(contentForUri),
       };
