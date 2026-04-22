@@ -405,7 +405,7 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const templateVersion = "v19";
+  const templateVersion = "v20";
   const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
   const uiCreateViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
   const uiPrivateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
@@ -429,8 +429,6 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV13NestedConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
   const generatedV14CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
-  const generatedV14CreateViewOutputTemplateUri = `${generatedV14CreateViewResourceUri}_v18`;
-  const generatedV14PrivateViewOutputTemplateUri = `${generatedV14PrivateViewResourceUri}_v18`;
   const generatedV17NamedCreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/Excalidraw+MCP+Public+Prod+v17+Fetch_create_view";
   const generatedV17NamedPrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/Excalidraw+MCP+Public+Prod+v17+Fetch_create_private_view";
   const generatedV17CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_view";
@@ -454,9 +452,9 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     "openai/widgetAccessible": true,
   });
   const widgetToolMeta = makeWidgetToolMeta(resourceUri);
-  const createViewWidgetMeta = makeWidgetToolMeta(generatedV17CreateViewResourceUri);
+  const createViewWidgetMeta = makeWidgetToolMeta(uiCreateViewResourceUri);
   const createViewV18WidgetMeta = makeWidgetToolMeta(uiCreateViewV18ResourceUri);
-  const privateViewWidgetMeta = makeWidgetToolMeta(generatedV17PrivateViewResourceUri);
+  const privateViewWidgetMeta = makeWidgetToolMeta(uiPrivateViewResourceUri);
   const privateViewV18WidgetMeta = makeWidgetToolMeta(uiPrivateViewV18ResourceUri);
 
   const createDiagramResult = async (elements: string, toolMeta = createViewWidgetMeta): Promise<CallToolResult> => {
@@ -892,66 +890,11 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   const widgetResourceAliases = [
     { name: "Excalidraw Diagram Widget", uri: resourceUri },
     { name: "Excalidraw Create View Widget", uri: uiCreateViewResourceUri },
-    { name: "Excalidraw Create View Widget v18", uri: uiCreateViewV18ResourceUri },
     { name: "Excalidraw Private View Widget", uri: uiPrivateViewResourceUri },
-    { name: "Excalidraw Private View Widget v18", uri: uiPrivateViewV18ResourceUri },
-    { name: "Excalidraw Create View Hosted Widget", uri: hostedCreateViewResourceUri },
-    { name: "Excalidraw Private View Hosted Widget", uri: hostedPrivateViewResourceUri },
-    { name: "Excalidraw Create View Generated v12 Widget", uri: generatedV12CreateViewResourceUri },
-    { name: "Excalidraw Private View Generated v12 Widget", uri: generatedV12PrivateViewResourceUri },
-    { name: "Excalidraw Create View Generated v13 Widget", uri: generatedV13CreateViewResourceUri },
-    { name: "Excalidraw Private View Generated v13 Widget", uri: generatedV13PrivateViewResourceUri },
-    { name: "Excalidraw Connector Create View Generated v13 Widget", uri: generatedV13ConnectorCreateViewResourceUri },
-    { name: "Excalidraw Connector Private View Generated v13 Widget", uri: generatedV13ConnectorPrivateViewResourceUri },
-    { name: "Excalidraw Nested Connector Create View Generated v13 Widget", uri: generatedV13NestedConnectorCreateViewResourceUri },
-    { name: "Excalidraw Nested Connector Private View Generated v13 Widget", uri: generatedV13NestedConnectorPrivateViewResourceUri },
-    { name: "Excalidraw Create View Generated v14 Widget", uri: generatedV14CreateViewResourceUri },
-    { name: "Excalidraw Private View Generated v14 Widget", uri: generatedV14PrivateViewResourceUri },
-    { name: "Excalidraw Create View Generated v14 Widget v18", uri: generatedV14CreateViewOutputTemplateUri },
-    { name: "Excalidraw Private View Generated v14 Widget v18", uri: generatedV14PrivateViewOutputTemplateUri },
-    { name: "Excalidraw Create View Generated v17 Widget", uri: generatedV17CreateViewResourceUri },
-    { name: "Excalidraw Private View Generated v17 Widget", uri: generatedV17PrivateViewResourceUri },
-    { name: "Excalidraw Named Create View Generated v17 Widget", uri: generatedV17NamedCreateViewResourceUri },
-    { name: "Excalidraw Named Private View Generated v17 Widget", uri: generatedV17NamedPrivateViewResourceUri },
-    { name: "Excalidraw Connector Named Create View Generated v17 Widget", uri: generatedV17ConnectorNamedCreateViewResourceUri },
-    { name: "Excalidraw Connector Named Private View Generated v17 Widget", uri: generatedV17ConnectorNamedPrivateViewResourceUri },
-    { name: "Excalidraw Connector Create View Generated v17 Widget", uri: generatedV17ConnectorCreateViewResourceUri },
-    { name: "Excalidraw Connector Private View Generated v17 Widget", uri: generatedV17ConnectorPrivateViewResourceUri },
-    { name: "Excalidraw Nested Connector Create View Generated v17 Widget", uri: generatedV17NestedConnectorCreateViewResourceUri },
-    { name: "Excalidraw Nested Connector Private View Generated v17 Widget", uri: generatedV17NestedConnectorPrivateViewResourceUri },
-    { name: "Excalidraw Connector Create View Generated v14 Widget", uri: generatedV14ConnectorCreateViewResourceUri },
-    { name: "Excalidraw Connector Private View Generated v14 Widget", uri: generatedV14ConnectorPrivateViewResourceUri },
-    { name: "Excalidraw Nested Connector Create View Generated v14 Widget", uri: generatedV14NestedConnectorCreateViewResourceUri },
-    { name: "Excalidraw Nested Connector Private View Generated v14 Widget", uri: generatedV14NestedConnectorPrivateViewResourceUri },
   ];
 
   const additionalContentAliasesForUri = (_uri: string): string[] => {
-    return [
-      uiCreateViewResourceUri,
-      uiCreateViewV18ResourceUri,
-      uiPrivateViewResourceUri,
-      uiPrivateViewV18ResourceUri,
-      hostedCreateViewResourceUri,
-      hostedPrivateViewResourceUri,
-      generatedV14CreateViewResourceUri,
-      generatedV14PrivateViewResourceUri,
-      generatedV14CreateViewOutputTemplateUri,
-      generatedV14PrivateViewOutputTemplateUri,
-      generatedV17NamedCreateViewResourceUri,
-      generatedV17NamedPrivateViewResourceUri,
-      generatedV17CreateViewResourceUri,
-      generatedV17PrivateViewResourceUri,
-      generatedV17ConnectorNamedCreateViewResourceUri,
-      generatedV17ConnectorNamedPrivateViewResourceUri,
-      generatedV17ConnectorCreateViewResourceUri,
-      generatedV17ConnectorPrivateViewResourceUri,
-      generatedV17NestedConnectorCreateViewResourceUri,
-      generatedV17NestedConnectorPrivateViewResourceUri,
-      generatedV14ConnectorCreateViewResourceUri,
-      generatedV14ConnectorPrivateViewResourceUri,
-      generatedV14NestedConnectorCreateViewResourceUri,
-      generatedV14NestedConnectorPrivateViewResourceUri,
-    ];
+    return [];
   };
 
   const isAdvertisableContentUri = (uri: string): boolean =>
