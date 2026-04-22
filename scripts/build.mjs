@@ -21,7 +21,7 @@ rmSync(join(root, "dist"), { recursive: true, force: true });
 // 1. Type-check
 run("tsc --noEmit");
 
-// 2. Vite build (singlefile HTML)
+// 2. Vite build (small HTML template plus hosted assets)
 run("vite build");
 
 // 3. Move the HTML output to dist root (cross-platform)

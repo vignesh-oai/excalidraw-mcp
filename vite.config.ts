@@ -1,12 +1,13 @@
 import path from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { viteSingleFile } from "vite-plugin-singlefile";
 
 const isDevelopment = process.env.NODE_ENV === "development";
+const widgetOrigin = "https://excalidraw-mcp-pearl-six.vercel.app";
 
 export default defineConfig({
-  plugins: [react(), viteSingleFile()],
+  base: `${widgetOrigin}/`,
+  plugins: [react()],
   build: {
     sourcemap: isDevelopment ? "inline" : undefined,
     cssMinify: !isDevelopment,
