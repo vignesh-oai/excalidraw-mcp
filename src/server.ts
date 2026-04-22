@@ -405,7 +405,7 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const templateVersion = "v16";
+  const templateVersion = "v18";
   const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
   const uiCreateViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
   const uiPrivateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
@@ -433,8 +433,6 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     const url = new URL(uri);
     return `${url.pathname}${url.search}`;
   };
-  const generatedV14CreateViewResourcePath = pathAndSearch(generatedV14CreateViewOutputTemplateUri);
-  const generatedV14PrivateViewResourcePath = pathAndSearch(generatedV14PrivateViewOutputTemplateUri);
   const generatedV14ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
@@ -448,8 +446,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     "openai/widgetAccessible": true,
   });
   const widgetToolMeta = makeWidgetToolMeta(resourceUri);
-  const createViewWidgetMeta = makeWidgetToolMeta(generatedV14CreateViewOutputTemplateUri);
-  const privateViewWidgetMeta = makeWidgetToolMeta(generatedV14PrivateViewOutputTemplateUri);
+  const createViewWidgetMeta = makeWidgetToolMeta(uiCreateViewResourceUri);
+  const privateViewWidgetMeta = makeWidgetToolMeta(uiPrivateViewResourceUri);
 
   const createDiagramResult = async (elements: string, toolMeta = createViewWidgetMeta): Promise<CallToolResult> => {
     if (elements.length > MAX_INPUT_BYTES) {
@@ -902,9 +900,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   };
 
   const canonicalContentUriForUri = (uri: string): string => {
-    const toolMeta = metaForResourceUri(uri);
-    if (toolMeta === createViewWidgetMeta) return generatedV14CreateViewResourcePath;
-    if (toolMeta === privateViewWidgetMeta) return generatedV14PrivateViewResourcePath;
+    if (uri.startsWith(widgetDomain)) return pathAndSearch(uri);
     return uri;
   };
 
