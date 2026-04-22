@@ -810,8 +810,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "/asdk_app_69e833ff63188191b4db61589c37685f/link_69e8343a6fe881919edb2cefee633f0e/create_private_view", uri: "ui://excalidraw/templates/public-prod-v2-link-create-private-view.html" },
     { name: "Excalidraw MCP Public Prod v4_create_view", uri: "ui://excalidraw/templates/public-prod-v4-create-view.html" },
     { name: "Excalidraw MCP Public Prod v4_create_private_view", uri: "ui://excalidraw/templates/public-prod-v4-create-private-view.html" },
-    { name: "/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_view", uri: "ui://excalidraw/templates/public-prod-v4-link-create-view.html" },
-    { name: "/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view", uri: "ui://excalidraw/templates/public-prod-v4-link-create-private-view.html" },
+    { name: "/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_view", uri: "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_view" },
+    { name: "/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view", uri: "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view" },
   ];
 
   const widgetCompatibilityResourceUris = [
@@ -823,6 +823,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     "ui://excalidraw/templates/public-prod-v4-create-private-view.html",
     "ui://excalidraw/templates/public-prod-v4-link-create-view.html",
     "ui://excalidraw/templates/public-prod-v4-link-create-private-view.html",
+    "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_view",
+    "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view",
   ];
 
   const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
