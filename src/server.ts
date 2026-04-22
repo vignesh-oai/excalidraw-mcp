@@ -1,5 +1,5 @@
 import { registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from "@modelcontextprotocol/ext-apps/server";
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult, ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
@@ -405,11 +405,12 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const templateVersion = "v7";
-  const resourceUri = `ui://excalidraw/templates/${templateVersion}/mcp_app`;
-  const createViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_view`;
-  const privateViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_private_view`;
-  const legacyUiResourceUri = "ui://excalidraw/mcp-app.html";
+  const templateVersion = "v8";
+  const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
+  const createViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
+  const privateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
+  const hostedCreateViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_view`;
+  const hostedPrivateViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_private_view`;
   const legacyUiCreateViewResourceUri = "ui://excalidraw/templates/create-view.html";
   const legacyUiPrivateViewResourceUri = "ui://excalidraw/templates/create-private-view.html";
   const legacyV4CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_view";
@@ -795,6 +796,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   const metaForResourceUri = (uri: string) => {
     if (
       uri === createViewResourceUri ||
+      uri === hostedCreateViewResourceUri ||
       uri === legacyUiCreateViewResourceUri ||
       uri === legacyV4CreateViewResourceUri ||
       uri === generatedV7CreateViewResourceUri ||
@@ -802,6 +804,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     ) return createViewWidgetMeta;
     if (
       uri === privateViewResourceUri ||
+      uri === hostedPrivateViewResourceUri ||
       uri === legacyUiPrivateViewResourceUri ||
       uri === legacyV4PrivateViewResourceUri ||
       uri === generatedV7PrivateViewResourceUri ||
@@ -832,23 +835,23 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Diagram Widget", uri: resourceUri },
     { name: "Excalidraw Create View Widget", uri: createViewResourceUri },
     { name: "Excalidraw Private View Widget", uri: privateViewResourceUri },
-    { name: "Excalidraw Legacy UI Widget", uri: legacyUiResourceUri },
-    { name: "Excalidraw Legacy UI Create View Widget", uri: legacyUiCreateViewResourceUri },
-    { name: "Excalidraw Legacy UI Private View Widget", uri: legacyUiPrivateViewResourceUri },
-    { name: "Excalidraw MCP Public Prod v4 legacy create_view", uri: legacyV4CreateViewResourceUri },
-    { name: "Excalidraw MCP Public Prod v4 legacy create_private_view", uri: legacyV4PrivateViewResourceUri },
-    { name: "Excalidraw MCP Public Prod v7 generated create_view", uri: generatedV7CreateViewResourceUri },
-    { name: "Excalidraw MCP Public Prod v7 generated create_private_view", uri: generatedV7PrivateViewResourceUri },
   ];
 
   const additionalContentAliasesForUri = (uri: string): string[] => {
+    if (
+      uri === resourceUri ||
+      uri === createViewResourceUri ||
+      uri === privateViewResourceUri
+    ) {
+      return [];
+    }
     if (metaForResourceUri(uri) === createViewWidgetMeta) {
-      return [createViewResourceUri, generatedV7CreateViewResourceUri, legacyV4CreateViewResourceUri];
+      return [createViewResourceUri];
     }
     if (metaForResourceUri(uri) === privateViewWidgetMeta) {
-      return [privateViewResourceUri, generatedV7PrivateViewResourceUri, legacyV4PrivateViewResourceUri];
+      return [privateViewResourceUri];
     }
-    return [resourceUri, legacyUiResourceUri];
+    return [resourceUri];
   };
 
   const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
@@ -882,12 +885,6 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     });
   }
 
-  server.registerResource(
-    "Excalidraw Generated ChatGPT Widget Links",
-    new ResourceTemplate(`${widgetDomain}/asdk_app_{appId}/link_{linkId}/{tool}`, { list: undefined }),
-    widgetResourceConfigForUri(createViewResourceUri),
-    async (requestedUri, _variables, _extra): Promise<ReadResourceResult> => readWidgetResource(requestedUri.toString()),
-  );
 }
 
 /**
