@@ -405,10 +405,10 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const templateVersion = "v9";
+  const templateVersion = "v10";
   const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
-  const createViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
-  const privateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
+  const uiCreateViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
+  const uiPrivateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
   const hostedCreateViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_view`;
   const hostedPrivateViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_private_view`;
   const legacyUiCreateViewResourceUri = "ui://excalidraw/templates/create-view.html";
@@ -417,17 +417,17 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const legacyV4PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view";
   const generatedV7CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e85145c3ac8191a72b385f033d6d50/link_69e852ad6b8c819190bd4a8b48397386/create_view";
   const generatedV7PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e85145c3ac8191a72b385f033d6d50/link_69e852ad6b8c819190bd4a8b48397386/create_private_view";
-  const makeWidgetToolMeta = (templateUri: string) => ({
-    ui: { resourceUri: templateUri },
-    "ui/resourceUri": templateUri,
+  const makeWidgetToolMeta = (templateUri: string, uiResourceUri = templateUri) => ({
+    ui: { resourceUri: uiResourceUri },
+    "ui/resourceUri": uiResourceUri,
     "openai/outputTemplate": templateUri,
     "openai/toolInvocation/invoking": "Rendering Excalidraw diagram",
     "openai/toolInvocation/invoked": "Rendered Excalidraw diagram",
     "openai/widgetAccessible": true,
   });
   const widgetToolMeta = makeWidgetToolMeta(resourceUri);
-  const createViewWidgetMeta = makeWidgetToolMeta(createViewResourceUri);
-  const privateViewWidgetMeta = makeWidgetToolMeta(privateViewResourceUri);
+  const createViewWidgetMeta = makeWidgetToolMeta(hostedCreateViewResourceUri, uiCreateViewResourceUri);
+  const privateViewWidgetMeta = makeWidgetToolMeta(hostedPrivateViewResourceUri, uiPrivateViewResourceUri);
 
   const createDiagramResult = async (elements: string, toolMeta = createViewWidgetMeta): Promise<CallToolResult> => {
     if (elements.length > MAX_INPUT_BYTES) {
@@ -795,7 +795,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
 
   const metaForResourceUri = (uri: string) => {
     if (
-      uri === createViewResourceUri ||
+      uri === uiCreateViewResourceUri ||
       uri === hostedCreateViewResourceUri ||
       uri === legacyUiCreateViewResourceUri ||
       uri === legacyV4CreateViewResourceUri ||
@@ -803,7 +803,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri.endsWith("/create_view")
     ) return createViewWidgetMeta;
     if (
-      uri === privateViewResourceUri ||
+      uri === uiPrivateViewResourceUri ||
       uri === hostedPrivateViewResourceUri ||
       uri === legacyUiPrivateViewResourceUri ||
       uri === legacyV4PrivateViewResourceUri ||
@@ -833,23 +833,27 @@ Use this to verify that a protected tool can coexist with public tools on the sa
 
   const widgetResourceAliases = [
     { name: "Excalidraw Diagram Widget", uri: resourceUri },
-    { name: "Excalidraw Create View Widget", uri: createViewResourceUri },
-    { name: "Excalidraw Private View Widget", uri: privateViewResourceUri },
+    { name: "Excalidraw Create View Widget", uri: uiCreateViewResourceUri },
+    { name: "Excalidraw Private View Widget", uri: uiPrivateViewResourceUri },
+    { name: "Excalidraw Create View Hosted Widget", uri: hostedCreateViewResourceUri },
+    { name: "Excalidraw Private View Hosted Widget", uri: hostedPrivateViewResourceUri },
   ];
 
   const additionalContentAliasesForUri = (uri: string): string[] => {
     if (
       uri === resourceUri ||
-      uri === createViewResourceUri ||
-      uri === privateViewResourceUri
+      uri === uiCreateViewResourceUri ||
+      uri === uiPrivateViewResourceUri ||
+      uri === hostedCreateViewResourceUri ||
+      uri === hostedPrivateViewResourceUri
     ) {
       return [];
     }
     if (metaForResourceUri(uri) === createViewWidgetMeta) {
-      return [createViewResourceUri];
+      return [hostedCreateViewResourceUri, uiCreateViewResourceUri];
     }
     if (metaForResourceUri(uri) === privateViewWidgetMeta) {
-      return [privateViewResourceUri];
+      return [hostedPrivateViewResourceUri, uiPrivateViewResourceUri];
     }
     return [resourceUri];
   };
