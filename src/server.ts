@@ -431,10 +431,6 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV14PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14CreateViewOutputTemplateUri = `${generatedV14CreateViewResourceUri}_v18`;
   const generatedV14PrivateViewOutputTemplateUri = `${generatedV14PrivateViewResourceUri}_v18`;
-  const pathAndSearch = (uri: string) => {
-    const url = new URL(uri);
-    return `${url.pathname}${url.search}`;
-  };
   const generatedV14ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
@@ -918,9 +914,12 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     ];
   };
 
+  const isAdvertisableContentUri = (uri: string): boolean =>
+    uri.startsWith("ui://") || uri.startsWith("https://") || uri.startsWith("connectors://");
+
   const canonicalContentUriForUri = (uri: string): string => {
-    if (uri.startsWith(widgetDomain)) return pathAndSearch(uri);
-    return uri;
+    if (isAdvertisableContentUri(uri)) return uri;
+    return uri.includes("private") ? uiPrivateViewResourceUri : uiCreateViewResourceUri;
   };
 
   const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
@@ -971,8 +970,18 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       configUri: hostedCreateViewResourceUri,
     },
     {
+      name: "Excalidraw Relative Generated Create View Widget",
+      uriTemplate: "/{appId}/{linkId}/create_view",
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
       name: "Excalidraw Generated Create View Widget v18",
       uriTemplate: `${widgetDomain}/{appId}/{linkId}/create_view_v18`,
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Relative Generated Create View Widget v18",
+      uriTemplate: "/{appId}/{linkId}/create_view_v18",
       configUri: hostedCreateViewResourceUri,
     },
     {
@@ -981,8 +990,18 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       configUri: hostedPrivateViewResourceUri,
     },
     {
+      name: "Excalidraw Relative Generated Private View Widget",
+      uriTemplate: "/{appId}/{linkId}/create_private_view",
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
       name: "Excalidraw Generated Private View Widget v18",
       uriTemplate: `${widgetDomain}/{appId}/{linkId}/create_private_view_v18`,
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Relative Generated Private View Widget v18",
+      uriTemplate: "/{appId}/{linkId}/create_private_view_v18",
       configUri: hostedPrivateViewResourceUri,
     },
     {
@@ -1021,8 +1040,18 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       configUri: hostedCreateViewResourceUri,
     },
     {
+      name: "Excalidraw Plain Named Create View Widget",
+      uriTemplate: "{resourceName}_create_view",
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
       name: "Excalidraw Named Private View Widget",
       uriTemplate: `${widgetDomain}/{resourceName}_create_private_view`,
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Plain Named Private View Widget",
+      uriTemplate: "{resourceName}_create_private_view",
       configUri: hostedPrivateViewResourceUri,
     },
     {
