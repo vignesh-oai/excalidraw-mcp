@@ -900,10 +900,6 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   ];
 
   const additionalContentAliasesForUri = (_uri: string): string[] => {
-    const generatedV14CreateViewPath = pathAndSearch(generatedV14CreateViewResourceUri);
-    const generatedV14PrivateViewPath = pathAndSearch(generatedV14PrivateViewResourceUri);
-    const generatedV14CreateViewVersionedPath = pathAndSearch(generatedV14CreateViewOutputTemplateUri);
-    const generatedV14PrivateViewVersionedPath = pathAndSearch(generatedV14PrivateViewOutputTemplateUri);
     return [
       uiCreateViewResourceUri,
       uiCreateViewV18ResourceUri,
@@ -919,10 +915,6 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       generatedV14ConnectorPrivateViewResourceUri,
       generatedV14NestedConnectorCreateViewResourceUri,
       generatedV14NestedConnectorPrivateViewResourceUri,
-      generatedV14CreateViewPath.slice(1),
-      generatedV14PrivateViewPath.slice(1),
-      generatedV14CreateViewVersionedPath.slice(1),
-      generatedV14PrivateViewVersionedPath.slice(1),
     ];
   };
 
