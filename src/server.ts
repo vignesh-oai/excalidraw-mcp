@@ -408,6 +408,7 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
   const widgetToolMeta = {
     ui: { resourceUri },
+    "ui/resourceUri": resourceUri,
     "openai/outputTemplate": resourceUri,
     "openai/toolInvocation/invoking": "Rendering Excalidraw diagram",
     "openai/toolInvocation/invoked": "Rendered Excalidraw diagram",
