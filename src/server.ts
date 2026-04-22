@@ -1,5 +1,6 @@
 import { registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from "@modelcontextprotocol/ext-apps/server";
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { ErrorCode, McpError, ReadResourceRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { CallToolResult, ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
@@ -1156,6 +1157,27 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       },
     );
   }
+
+  const isKnownWidgetReadUri = (uri: string): boolean =>
+    uri === resourceUri ||
+    uri === uiCreateViewResourceUri ||
+    uri === uiPrivateViewResourceUri ||
+    uri.includes("excalidraw") ||
+    /(?:^|[/_-])(?:create[-_])?private[-_]view(?:[-_]v\d+)?(?:\.html)?$/i.test(uri) ||
+    /(?:^|[/_-])create[-_]view(?:[-_]v\d+)?(?:\.html)?$/i.test(uri);
+
+  // ChatGPT's API-tool path for MCP Apps is a relative URI
+  // (/asdk_app_.../link_.../create_view). The upstream SDK resource handler
+  // eagerly constructs `new URL(uri)`, which rejects those paths before our
+  // ResourceTemplate matchers can run. Keep the normal list/template handlers
+  // from McpServer, but replace reads with a tolerant widget-only resolver.
+  server.server.setRequestHandler(ReadResourceRequestSchema, async (request): Promise<ReadResourceResult> => {
+    const uri = request.params.uri;
+    if (!isKnownWidgetReadUri(uri)) {
+      throw new McpError(ErrorCode.InvalidParams, `Resource ${uri} not found`);
+    }
+    return readWidgetResource(uri);
+  });
 
 }
 
