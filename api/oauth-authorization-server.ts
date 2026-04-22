@@ -3,9 +3,13 @@ import {
   metadataCorsHeaders,
 } from "../src/auth.js";
 
-const handler = async () => {
+function headersFromRequest(request: Request): Record<string, string> {
+  return Object.fromEntries(request.headers.entries());
+}
+
+const handler = async (request: Request) => {
   try {
-    return Response.json(await fetchAuthorizationServerMetadata(), {
+    return Response.json(await fetchAuthorizationServerMetadata(headersFromRequest(request)), {
       headers: metadataCorsHeaders(),
     });
   } catch (error) {

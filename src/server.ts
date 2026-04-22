@@ -582,13 +582,13 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   );
 
   // ============================================================
-  // Tool 2: private_auth_status (protected WorkOS diagnostic)
+  // Tool 2: private_auth_status (protected OAuth diagnostic)
   // ============================================================
   server.registerTool(
     "private_auth_status",
     {
       title: "Private Auth Status",
-      description: "Protected diagnostic tool. Requires WorkOS AuthKit OAuth and returns the authenticated user context.",
+      description: "Protected diagnostic tool. Requires Excalidraw MCP OAuth and returns the authenticated user context.",
       annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
       _meta: { securitySchemes: PRIVATE_SECURITY_SCHEMES },
     },
@@ -598,7 +598,7 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
 
       const displayName = auth.user.email ?? auth.user.name ?? auth.user.subject;
       return {
-        content: [{ type: "text", text: `Authenticated via WorkOS AuthKit as ${displayName}.` }],
+        content: [{ type: "text", text: `Authenticated via Excalidraw MCP OAuth as ${displayName}.` }],
         structuredContent: {
           subject: auth.user.subject,
           email: auth.user.email,
@@ -634,13 +634,13 @@ Call read_me first to learn the element format.`,
   );
 
   // ============================================================
-  // Tool 4: create_private_view (Excalidraw SVG, WorkOS protected)
+  // Tool 4: create_private_view (Excalidraw SVG, OAuth protected)
   // ============================================================
   registerAppTool(server,
     "create_private_view",
     {
       title: "Draw Private Diagram",
-      description: `Renders a hand-drawn diagram using Excalidraw elements after WorkOS AuthKit OAuth succeeds.
+      description: `Renders a hand-drawn diagram using Excalidraw elements after Excalidraw MCP OAuth succeeds.
 Use this to verify that a protected tool can coexist with public tools on the same MCP server.`,
       inputSchema: z.object({
         elements: z.string().describe(
@@ -667,7 +667,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
           if (index !== 0 || item.type !== "text") return item;
           return {
             ...item,
-            text: `Authenticated via WorkOS AuthKit as ${displayName}.\n\n${item.text}`,
+            text: `Authenticated via Excalidraw MCP OAuth as ${displayName}.\n\n${item.text}`,
           };
         }),
         structuredContent: {

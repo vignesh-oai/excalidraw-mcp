@@ -1,7 +1,7 @@
-import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 
-export const AUTH_SCOPES = ["openid", "profile", "email"] as const;
-export const REQUIRED_AUTH_SCOPES = ["openid"] as const;
+export const AUTH_SCOPES = ["diagram.private"] as const;
+export const REQUIRED_AUTH_SCOPES = ["diagram.private"] as const;
 
 export const PUBLIC_SECURITY_SCHEMES = [{ type: "noauth" }] as const;
 export const PRIVATE_SECURITY_SCHEMES = [
@@ -22,8 +22,6 @@ export type AuthenticatedUser = {
 type AuthResult =
   | { ok: true; user: AuthenticatedUser }
   | { ok: false; message: string; challenge: string };
-
-const jwksByIssuer = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
 
 function env(name: string): string | undefined {
   const value = process.env[name]?.trim();
@@ -50,12 +48,12 @@ function getHeader(headers: HeaderBag | undefined, name: string): string | undef
 }
 
 export function getWorkOSIssuer(): string | undefined {
-  const issuer =
-    env("WORKOS_AUTHKIT_ISSUER") ??
-    env("WORKOS_AUTHKIT_DOMAIN") ??
-    env("WORKOS_ISSUER") ??
-    env("AUTHKIT_ISSUER");
-  return issuer ? normalizeUrl(issuer) : undefined;
+  return undefined;
+}
+
+export function getAuthorizationIssuer(headers?: HeaderBag): string {
+  const issuer = env("MCP_OAUTH_ISSUER") ?? getResourceUrl(headers);
+  return normalizeUrl(issuer);
 }
 
 export function getResourceUrl(headers?: HeaderBag): string {
@@ -79,44 +77,49 @@ export function getProtectedResourceMetadataUrl(headers?: HeaderBag): string {
 }
 
 export function getAuthorizationServerMetadataUrl(): string | undefined {
-  const issuer = getWorkOSIssuer();
-  return issuer ? new URL("/.well-known/oauth-authorization-server", issuer).toString() : undefined;
+  return undefined;
 }
 
 export function getJwksUrl(): string | undefined {
-  const issuer = getWorkOSIssuer();
-  return issuer ? new URL("/oauth2/jwks", issuer).toString() : undefined;
+  return undefined;
 }
 
 export function protectedResourceMetadata(headers?: HeaderBag): Record<string, unknown> {
-  const issuer = getWorkOSIssuer();
+  const issuer = getAuthorizationIssuer(headers);
   return {
     resource: getResourceUrl(headers),
-    authorization_servers: issuer ? [issuer] : [],
+    authorization_servers: [issuer],
     scopes_supported: [...AUTH_SCOPES],
     bearer_methods_supported: ["header"],
-    resource_name: "Excalidraw MCP mixed-auth reference",
+    resource_name: "Excalidraw MCP protected diagrams",
   };
 }
 
 export function metadataCorsHeaders(): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization, Mcp-Session-Id",
   };
 }
 
-export async function fetchAuthorizationServerMetadata(): Promise<unknown> {
-  const metadataUrl = getAuthorizationServerMetadataUrl();
-  if (!metadataUrl) {
-    throw new Error("WORKOS_AUTHKIT_ISSUER or WORKOS_AUTHKIT_DOMAIN must be configured.");
-  }
-  const response = await fetch(metadataUrl);
-  if (!response.ok) {
-    throw new Error(`WorkOS authorization metadata fetch failed: ${response.status}`);
-  }
-  return response.json();
+export function authorizationServerMetadata(headers?: HeaderBag): Record<string, unknown> {
+  const issuer = getAuthorizationIssuer(headers);
+  return {
+    issuer,
+    authorization_endpoint: new URL("/oauth2/authorize", issuer).toString(),
+    token_endpoint: new URL("/oauth2/token", issuer).toString(),
+    registration_endpoint: new URL("/oauth2/register", issuer).toString(),
+    response_types_supported: ["code"],
+    grant_types_supported: ["authorization_code"],
+    code_challenge_methods_supported: ["S256"],
+    token_endpoint_auth_methods_supported: ["none"],
+    scopes_supported: [...AUTH_SCOPES],
+  };
+}
+
+export async function fetchAuthorizationServerMetadata(headers?: HeaderBag): Promise<unknown> {
+  return authorizationServerMetadata(headers);
 }
 
 function quoted(value: string): string {
@@ -164,25 +167,116 @@ function audienceMatches(payload: JWTPayload, headers?: HeaderBag): boolean {
   return audiences.length === 0 || audiences.includes(expected) || audiences.includes(getResourceUrl(headers));
 }
 
-function getJwks(issuer: string): ReturnType<typeof createRemoteJWKSet> {
-  let jwks = jwksByIssuer.get(issuer);
-  if (!jwks) {
-    jwks = createRemoteJWKSet(new URL("/oauth2/jwks", issuer));
-    jwksByIssuer.set(issuer, jwks);
-  }
-  return jwks;
+function getOAuthSigningKey(): Uint8Array {
+  const secret =
+    env("MCP_OAUTH_SIGNING_SECRET") ??
+    env("AUTHKIT_SECRET") ??
+    env("WORKOS_API_KEY") ??
+    "excalidraw-mcp-local-oauth-demo-secret";
+  return new TextEncoder().encode(secret);
+}
+
+function bytesToBase64url(bytes: Uint8Array): string {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+async function sha256Base64url(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return bytesToBase64url(new Uint8Array(digest));
+}
+
+export async function createAuthorizationCode({
+  clientId,
+  redirectUri,
+  codeChallenge,
+  codeChallengeMethod,
+  resource,
+  scope,
+  headers,
+}: {
+  clientId: string;
+  redirectUri: string;
+  codeChallenge: string;
+  codeChallengeMethod: string;
+  resource: string;
+  scope: string;
+  headers?: HeaderBag;
+}): Promise<string> {
+  return new SignJWT({
+    typ: "authorization_code",
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    code_challenge: codeChallenge,
+    code_challenge_method: codeChallengeMethod,
+    resource,
+    scope,
+    email: "vignesh@openai.com",
+    name: "Vignesh Ramesh",
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuer(getAuthorizationIssuer(headers))
+    .setSubject("excalidraw-demo-user")
+    .setIssuedAt()
+    .setExpirationTime("5m")
+    .sign(getOAuthSigningKey());
+}
+
+export async function exchangeAuthorizationCode({
+  code,
+  codeVerifier,
+  clientId,
+  redirectUri,
+  resource,
+  headers,
+}: {
+  code: string;
+  codeVerifier: string;
+  clientId: string;
+  redirectUri: string;
+  resource?: string;
+  headers?: HeaderBag;
+}): Promise<{
+  accessToken: string;
+  scope: string;
+  expiresIn: number;
+}> {
+  const issuer = getAuthorizationIssuer(headers);
+  const { payload } = await jwtVerify(code, getOAuthSigningKey(), { issuer });
+  if (payload.typ !== "authorization_code") throw new Error("invalid authorization code");
+  if (payload.client_id !== clientId) throw new Error("client_id does not match authorization code");
+  if (payload.redirect_uri !== redirectUri) throw new Error("redirect_uri does not match authorization code");
+  if (payload.code_challenge_method !== "S256") throw new Error("unsupported code challenge method");
+  const expectedChallenge = typeof payload.code_challenge === "string" ? payload.code_challenge : "";
+  const actualChallenge = await sha256Base64url(codeVerifier);
+  if (expectedChallenge !== actualChallenge) throw new Error("PKCE verification failed");
+
+  const tokenResource =
+    resource ??
+    (typeof payload.resource === "string" ? payload.resource : undefined) ??
+    getResourceUrl(headers);
+  const scope = typeof payload.scope === "string" && payload.scope ? payload.scope : AUTH_SCOPES.join(" ");
+  const expiresIn = 60 * 60;
+  const accessToken = await new SignJWT({
+    scope,
+    scp: scope.split(/\s+/).filter(Boolean),
+    email: typeof payload.email === "string" ? payload.email : "vignesh@openai.com",
+    name: typeof payload.name === "string" ? payload.name : "Vignesh Ramesh",
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuer(issuer)
+    .setAudience(tokenResource)
+    .setSubject(payload.sub ?? "excalidraw-demo-user")
+    .setIssuedAt()
+    .setExpirationTime(`${expiresIn}s`)
+    .sign(getOAuthSigningKey());
+
+  return { accessToken, scope, expiresIn };
 }
 
 export async function verifyWorkOSAuth(headers?: HeaderBag): Promise<AuthResult> {
-  const issuer = getWorkOSIssuer();
-  if (!issuer) {
-    return {
-      ok: false,
-      message: "Authentication required, but WorkOS AuthKit is not configured on this deployment.",
-      challenge: authChallenge(headers, "server_error", "WorkOS AuthKit issuer is not configured"),
-    };
-  }
-
+  const issuer = getAuthorizationIssuer(headers);
   const token = getBearerToken(headers);
   if (!token) {
     return {
@@ -193,8 +287,8 @@ export async function verifyWorkOSAuth(headers?: HeaderBag): Promise<AuthResult>
   }
 
   try {
-    const { payload } = await jwtVerify(token, getJwks(issuer), { issuer });
-    if ((env("WORKOS_EXPECTED_AUDIENCE") || env("MCP_EXPECTED_AUDIENCE")) && !audienceMatches(payload, headers)) {
+    const { payload } = await jwtVerify(token, getOAuthSigningKey(), { issuer });
+    if (!audienceMatches(payload, headers)) {
       return {
         ok: false,
         message: "Authentication required: token audience does not match this MCP server.",
