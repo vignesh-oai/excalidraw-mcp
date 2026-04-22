@@ -17,6 +17,7 @@
     { "source": "/mcp", "destination": "/api/mcp" },
     { "source": "/sse", "destination": "/api/mcp" },
     { "source": "/message", "destination": "/api/mcp" },
+    { "source": "/widget/:version/:tool", "destination": "/api/widget-template" },
     { "source": "/asdk_app_:appId/link_:linkId/:tool", "destination": "/api/widget-template" }
   ],
   "headers": [

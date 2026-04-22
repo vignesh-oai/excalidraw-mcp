@@ -1,5 +1,5 @@
 import { registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from "@modelcontextprotocol/ext-apps/server";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult, ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
@@ -404,12 +404,16 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  * Shared between local (main.ts) and Vercel (api/mcp.ts) entry points.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
-  const resourceUri = "ui://excalidraw/mcp-app.html";
-  const createViewResourceUri = "ui://excalidraw/templates/create-view.html";
-  const privateViewResourceUri = "ui://excalidraw/templates/create-private-view.html";
+  const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
+  const templateVersion = "v7";
+  const resourceUri = `ui://excalidraw/templates/${templateVersion}/mcp_app`;
+  const createViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_view`;
+  const privateViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_private_view`;
+  const legacyUiResourceUri = "ui://excalidraw/mcp-app.html";
+  const legacyUiCreateViewResourceUri = "ui://excalidraw/templates/create-view.html";
+  const legacyUiPrivateViewResourceUri = "ui://excalidraw/templates/create-private-view.html";
   const legacyV4CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_view";
   const legacyV4PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view";
-  const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
   const makeWidgetToolMeta = (templateUri: string) => ({
     ui: { resourceUri: templateUri },
     "ui/resourceUri": templateUri,
@@ -787,8 +791,18 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   };
 
   const metaForResourceUri = (uri: string) => {
-    if (uri === createViewResourceUri || uri === legacyV4CreateViewResourceUri) return createViewWidgetMeta;
-    if (uri === privateViewResourceUri || uri === legacyV4PrivateViewResourceUri) return privateViewWidgetMeta;
+    if (
+      uri === createViewResourceUri ||
+      uri === legacyUiCreateViewResourceUri ||
+      uri === legacyV4CreateViewResourceUri ||
+      uri.endsWith("/create_view")
+    ) return createViewWidgetMeta;
+    if (
+      uri === privateViewResourceUri ||
+      uri === legacyUiPrivateViewResourceUri ||
+      uri === legacyV4PrivateViewResourceUri ||
+      uri.endsWith("/create_private_view")
+    ) return privateViewWidgetMeta;
     return widgetToolMeta;
   };
 
@@ -814,6 +828,9 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Diagram Widget", uri: resourceUri },
     { name: "Excalidraw Create View Widget", uri: createViewResourceUri },
     { name: "Excalidraw Private View Widget", uri: privateViewResourceUri },
+    { name: "Excalidraw Legacy UI Widget", uri: legacyUiResourceUri },
+    { name: "Excalidraw Legacy UI Create View Widget", uri: legacyUiCreateViewResourceUri },
+    { name: "Excalidraw Legacy UI Private View Widget", uri: legacyUiPrivateViewResourceUri },
     { name: "Excalidraw MCP Public Prod v4 legacy create_view", uri: legacyV4CreateViewResourceUri },
     { name: "Excalidraw MCP Public Prod v4 legacy create_private_view", uri: legacyV4PrivateViewResourceUri },
   ];
@@ -847,6 +864,13 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       return readWidgetResource(requestedUri.toString());
     });
   }
+
+  server.registerResource(
+    "Excalidraw Generated ChatGPT Widget Links",
+    new ResourceTemplate(`${widgetDomain}/asdk_app_{appId}/link_{linkId}/{tool}`, { list: undefined }),
+    widgetResourceConfigForUri(createViewResourceUri),
+    async (requestedUri, _variables, _extra): Promise<ReadResourceResult> => readWidgetResource(requestedUri.toString()),
+  );
 }
 
 /**
