@@ -777,7 +777,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
 
   // Register the single shared resource for all UI tools
   registerAppResource(server,
-    resourceUri,
+    "Excalidraw Diagram Widget",
     resourceUri,
     {
       mimeType: RESOURCE_MIME_TYPE,
