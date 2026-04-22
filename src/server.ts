@@ -441,6 +441,12 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV17NestedConnectorPrivateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
   const generatedV21NamedCreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/Excalidraw+MCP+Public+Prod+v21+Mixed_create_view";
   const generatedV21NamedPrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/Excalidraw+MCP+Public+Prod+v21+Mixed_create_private_view";
+  const generatedV21ResourcePathCreateView = "Excalidraw+MCP+Public+Prod+v21+Mixed_create_view";
+  const generatedV21ResourcePathPrivateView = "Excalidraw+MCP+Public+Prod+v21+Mixed_create_private_view";
+  const generatedV21DecodedResourcePathCreateView = "Excalidraw MCP Public Prod v21 Mixed_create_view";
+  const generatedV21DecodedResourcePathPrivateView = "Excalidraw MCP Public Prod v21 Mixed_create_private_view";
+  const generatedV21SlashResourcePathCreateView = "/asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_view";
+  const generatedV21SlashResourcePathPrivateView = "/asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_private_view";
   const generatedV21CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_view";
   const generatedV21PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_private_view";
   const generatedV21ConnectorNamedCreateViewResourceUri = "connectors://asdk_app_69e88f7829f48191858a6aeef740ccd2/Excalidraw+MCP+Public+Prod+v21+Mixed_create_view";
@@ -921,6 +927,9 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       return [
         generatedV21NamedPrivateViewResourceUri,
         generatedV21PrivateViewResourceUri,
+        generatedV21ResourcePathPrivateView,
+        generatedV21DecodedResourcePathPrivateView,
+        generatedV21SlashResourcePathPrivateView,
         generatedV21ConnectorNamedPrivateViewResourceUri,
         generatedV21ConnectorPrivateViewResourceUri,
       ];
@@ -930,6 +939,9 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       return [
         generatedV21NamedCreateViewResourceUri,
         generatedV21CreateViewResourceUri,
+        generatedV21ResourcePathCreateView,
+        generatedV21DecodedResourcePathCreateView,
+        generatedV21SlashResourcePathCreateView,
         generatedV21ConnectorNamedCreateViewResourceUri,
         generatedV21ConnectorCreateViewResourceUri,
       ];
