@@ -779,29 +779,34 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     },
   };
 
-  // Register the single shared resource for all UI tools
-  registerAppResource(server,
-    "Excalidraw Diagram Widget",
-    resourceUri,
-    {
-      mimeType: RESOURCE_MIME_TYPE,
-      description: "Interactive Excalidraw diagram widget with editing, checkpoint, and export controls.",
-      _meta: {
-        ...widgetToolMeta,
-        ...cspMeta,
-        ui: {
-          ...widgetToolMeta.ui,
-          ...cspMeta.ui,
-          prefersBorder: true,
-          permissions: { clipboardWrite: {} },
-        },
+  const widgetResourceConfig = {
+    mimeType: RESOURCE_MIME_TYPE,
+    description: "Interactive Excalidraw diagram widget with editing, checkpoint, and export controls.",
+    _meta: {
+      ...widgetToolMeta,
+      ...cspMeta,
+      ui: {
+        ...widgetToolMeta.ui,
+        ...cspMeta.ui,
+        prefersBorder: true,
+        permissions: { clipboardWrite: {} },
       },
     },
-    async (): Promise<ReadResourceResult> => {
+  };
+
+  const widgetResourceAliases = [
+    { name: "Excalidraw Diagram Widget", uri: resourceUri },
+    { name: "Excalidraw MCP Mixed Final_create_view", uri: "ui://excalidraw/templates/mixed-final-create-view.html" },
+    { name: "Excalidraw MCP Mixed Final_create_private_view", uri: "ui://excalidraw/templates/mixed-final-create-private-view.html" },
+    { name: "Excalidraw MCP Public Prod_create_view", uri: "ui://excalidraw/templates/public-prod-create-view.html" },
+    { name: "Excalidraw MCP Public Prod_create_private_view", uri: "ui://excalidraw/templates/public-prod-create-private-view.html" },
+  ];
+
+  const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
       const html = await fs.readFile(path.join(distDir, "mcp-app.html"), "utf-8");
       return {
         contents: [{
-          uri: resourceUri,
+          uri,
           mimeType: RESOURCE_MIME_TYPE,
           text: html,
           _meta: {
@@ -816,8 +821,14 @@ Use this to verify that a protected tool can coexist with public tools on the sa
           },
         }],
       };
-    },
-  );
+  };
+
+  // Register the shared widget under the canonical URI and app/tool aliases.
+  for (const { name, uri } of widgetResourceAliases) {
+    registerAppResource(server, name, uri, widgetResourceConfig, async (requestedUri): Promise<ReadResourceResult> => {
+      return readWidgetResource(requestedUri.toString());
+    });
+  }
 }
 
 /**
