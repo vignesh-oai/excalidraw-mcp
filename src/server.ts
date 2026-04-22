@@ -899,6 +899,14 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Diagram Widget", uri: resourceUri },
     { name: "Excalidraw Create View Widget", uri: uiCreateViewResourceUri },
     { name: "Excalidraw Private View Widget", uri: uiPrivateViewResourceUri },
+    { name: "Excalidraw v21 Named Create View Widget", uri: generatedV21NamedCreateViewResourceUri },
+    { name: "Excalidraw v21 Named Private View Widget", uri: generatedV21NamedPrivateViewResourceUri },
+    { name: "Excalidraw v21 Link Create View Widget", uri: generatedV21CreateViewResourceUri },
+    { name: "Excalidraw v21 Link Private View Widget", uri: generatedV21PrivateViewResourceUri },
+    { name: "Excalidraw v21 Connector Named Create View Widget", uri: generatedV21ConnectorNamedCreateViewResourceUri },
+    { name: "Excalidraw v21 Connector Named Private View Widget", uri: generatedV21ConnectorNamedPrivateViewResourceUri },
+    { name: "Excalidraw v21 Connector Link Create View Widget", uri: generatedV21ConnectorCreateViewResourceUri },
+    { name: "Excalidraw v21 Connector Link Private View Widget", uri: generatedV21ConnectorPrivateViewResourceUri },
   ];
 
   const additionalContentAliasesForUri = (uri: string): string[] => {

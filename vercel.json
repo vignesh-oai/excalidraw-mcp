@@ -18,6 +18,8 @@
     { "source": "/sse", "destination": "/api/mcp" },
     { "source": "/message", "destination": "/api/mcp" },
     { "source": "/widget/:version/:tool", "destination": "/api/widget-template" },
+    { "source": "/Excalidraw+MCP+Public+Prod+v21+Mixed_create_view", "destination": "/api/widget-template" },
+    { "source": "/Excalidraw+MCP+Public+Prod+v21+Mixed_create_private_view", "destination": "/api/widget-template" },
     { "source": "/asdk_app_:appId/link_:linkId/:tool", "destination": "/api/widget-template" }
   ],
   "headers": [
