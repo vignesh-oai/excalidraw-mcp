@@ -881,23 +881,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Nested Connector Private View Generated v14 Widget", uri: generatedV14NestedConnectorPrivateViewResourceUri },
   ];
 
-  const additionalContentAliasesForUri = (uri: string): string[] => {
-    if (
-      uri === resourceUri ||
-      uri === uiCreateViewResourceUri ||
-      uri === uiPrivateViewResourceUri ||
-      uri === hostedCreateViewResourceUri ||
-      uri === hostedPrivateViewResourceUri
-    ) {
-      return [];
-    }
-    if (metaForResourceUri(uri) === createViewWidgetMeta) {
-      return [hostedCreateViewResourceUri, uiCreateViewResourceUri];
-    }
-    if (metaForResourceUri(uri) === privateViewWidgetMeta) {
-      return [hostedPrivateViewResourceUri, uiPrivateViewResourceUri];
-    }
-    return [resourceUri];
+  const additionalContentAliasesForUri = (_uri: string): string[] => {
+    return [];
   };
 
   const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
