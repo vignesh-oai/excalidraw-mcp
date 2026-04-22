@@ -427,8 +427,14 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV13NestedConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
   const generatedV14CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
-  const generatedV14CreateViewResourcePath = new URL(generatedV14CreateViewResourceUri).pathname;
-  const generatedV14PrivateViewResourcePath = new URL(generatedV14PrivateViewResourceUri).pathname;
+  const generatedV14CreateViewOutputTemplateUri = `${generatedV14CreateViewResourceUri}?template=v17`;
+  const generatedV14PrivateViewOutputTemplateUri = `${generatedV14PrivateViewResourceUri}?template=v17`;
+  const pathAndSearch = (uri: string) => {
+    const url = new URL(uri);
+    return `${url.pathname}${url.search}`;
+  };
+  const generatedV14CreateViewResourcePath = pathAndSearch(generatedV14CreateViewOutputTemplateUri);
+  const generatedV14PrivateViewResourcePath = pathAndSearch(generatedV14PrivateViewOutputTemplateUri);
   const generatedV14ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
@@ -442,8 +448,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     "openai/widgetAccessible": true,
   });
   const widgetToolMeta = makeWidgetToolMeta(resourceUri);
-  const createViewWidgetMeta = makeWidgetToolMeta(generatedV14CreateViewResourceUri);
-  const privateViewWidgetMeta = makeWidgetToolMeta(generatedV14PrivateViewResourceUri);
+  const createViewWidgetMeta = makeWidgetToolMeta(generatedV14CreateViewOutputTemplateUri);
+  const privateViewWidgetMeta = makeWidgetToolMeta(generatedV14PrivateViewOutputTemplateUri);
 
   const createDiagramResult = async (elements: string, toolMeta = createViewWidgetMeta): Promise<CallToolResult> => {
     if (elements.length > MAX_INPUT_BYTES) {
@@ -811,6 +817,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   };
 
   const metaForResourceUri = (uri: string) => {
+    const uriWithoutQuery = uri.split("?")[0];
     if (
       uri === uiCreateViewResourceUri ||
       uri === hostedCreateViewResourceUri ||
@@ -822,9 +829,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === generatedV13ConnectorCreateViewResourceUri ||
       uri === generatedV13NestedConnectorCreateViewResourceUri ||
       uri === generatedV14CreateViewResourceUri ||
+      uriWithoutQuery === generatedV14CreateViewResourceUri ||
       uri === generatedV14ConnectorCreateViewResourceUri ||
       uri === generatedV14NestedConnectorCreateViewResourceUri ||
-      uri.endsWith("create_view")
+      uriWithoutQuery.endsWith("create_view")
     ) return createViewWidgetMeta;
     if (
       uri === uiPrivateViewResourceUri ||
@@ -837,9 +845,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === generatedV13ConnectorPrivateViewResourceUri ||
       uri === generatedV13NestedConnectorPrivateViewResourceUri ||
       uri === generatedV14PrivateViewResourceUri ||
+      uriWithoutQuery === generatedV14PrivateViewResourceUri ||
       uri === generatedV14ConnectorPrivateViewResourceUri ||
       uri === generatedV14NestedConnectorPrivateViewResourceUri ||
-      uri.endsWith("create_private_view")
+      uriWithoutQuery.endsWith("create_private_view")
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
   };
@@ -878,6 +887,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Nested Connector Private View Generated v13 Widget", uri: generatedV13NestedConnectorPrivateViewResourceUri },
     { name: "Excalidraw Create View Generated v14 Widget", uri: generatedV14CreateViewResourceUri },
     { name: "Excalidraw Private View Generated v14 Widget", uri: generatedV14PrivateViewResourceUri },
+    { name: "Excalidraw Create View Generated v14 Widget v17", uri: generatedV14CreateViewOutputTemplateUri },
+    { name: "Excalidraw Private View Generated v14 Widget v17", uri: generatedV14PrivateViewOutputTemplateUri },
     { name: "Excalidraw Connector Create View Generated v14 Widget", uri: generatedV14ConnectorCreateViewResourceUri },
     { name: "Excalidraw Connector Private View Generated v14 Widget", uri: generatedV14ConnectorPrivateViewResourceUri },
     { name: "Excalidraw Nested Connector Create View Generated v14 Widget", uri: generatedV14NestedConnectorCreateViewResourceUri },
