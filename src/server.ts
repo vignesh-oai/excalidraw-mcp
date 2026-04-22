@@ -515,14 +515,7 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     const checkpointId = crypto.randomUUID().replace(/-/g, "").slice(0, 18);
     await store.save(checkpointId, { elements: resolvedElements });
     return {
-      content: [{ type: "text", text: `Diagram displayed! Checkpoint id: "${checkpointId}".
-If user asks to create a new diagram - simply create a new one from scratch.
-However, if the user wants to edit something on this diagram "${checkpointId}", take these steps:
-1) read widget context (using read_widget_context tool) to check if user made any manual edits first
-2) decide whether you want to make new diagram from scratch OR - use this one as starting checkpoint:
-  simply start from the first element [{"type":"restoreCheckpoint","id":"${checkpointId}"}, ...your new elements...]
-  this will use same diagram state as the user currently sees, including any manual edits they made in fullscreen, allowing you to add elements on top.
-  To remove elements, use: {"type":"delete","ids":"<id1>,<id2>"}${ratioHint}` }],
+      content: [{ type: "text", text: `Diagram displayed. Checkpoint id: "${checkpointId}".${ratioHint}` }],
       structuredContent: { checkpointId },
       _meta: {
         ...toolMeta,
