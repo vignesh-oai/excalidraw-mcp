@@ -405,7 +405,7 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const templateVersion = "v12";
+  const templateVersion = "v13";
   const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
   const uiCreateViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
   const uiPrivateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
@@ -979,10 +979,35 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     },
   ];
 
+  const generatedResourceListFromRequest = (extra: any, toolName: "create_view" | "create_private_view") => {
+    const headerValues = Object.values(extra?.requestInfo?.headers ?? {})
+      .flat()
+      .filter((value): value is string => typeof value === "string");
+    const haystack = headerValues.join("\n");
+    const appIds = [...new Set(haystack.match(/asdk_app_[A-Za-z0-9_]+/g) ?? [])];
+    const linkIds = [...new Set(haystack.match(/link_[A-Za-z0-9_]+/g) ?? [])];
+
+    return {
+      resources: appIds.flatMap((appId) =>
+        linkIds.map((linkId) => ({
+          name: `Excalidraw Generated ${toolName} Widget`,
+          uri: `${widgetDomain}/${appId}/${linkId}/${toolName}`,
+        })),
+      ),
+    };
+  };
+
   for (const { name, uriTemplate, configUri } of generatedLinkResourceTemplates) {
     server.registerResource(
       name,
-      new ResourceTemplate(uriTemplate, { list: undefined }),
+      new ResourceTemplate(uriTemplate, {
+        list: uriTemplate.includes("{appId}") && uriTemplate.includes("{linkId}")
+          ? (extra) => generatedResourceListFromRequest(
+            extra,
+            uriTemplate.endsWith("create_private_view") ? "create_private_view" : "create_view",
+          )
+          : undefined,
+      }),
       widgetResourceConfigForUri(configUri),
       async (requestedUri): Promise<ReadResourceResult> => {
         return readWidgetResource(requestedUri.toString());
