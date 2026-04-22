@@ -423,8 +423,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV13PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
   const generatedV13ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_view";
   const generatedV13ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
-  const generatedV13PathCreateViewResourceUri = "/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_view";
-  const generatedV13PathPrivateViewResourceUri = "/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
+  const generatedV13NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_view";
+  const generatedV13NestedConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
   const makeWidgetToolMeta = (templateUri: string, uiResourceUri = templateUri) => ({
     ui: { resourceUri: uiResourceUri },
     "ui/resourceUri": uiResourceUri,
@@ -811,7 +811,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === generatedV12CreateViewResourceUri ||
       uri === generatedV13CreateViewResourceUri ||
       uri === generatedV13ConnectorCreateViewResourceUri ||
-      uri === generatedV13PathCreateViewResourceUri ||
+      uri === generatedV13NestedConnectorCreateViewResourceUri ||
       uri.endsWith("create_view")
     ) return createViewWidgetMeta;
     if (
@@ -823,7 +823,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === generatedV12PrivateViewResourceUri ||
       uri === generatedV13PrivateViewResourceUri ||
       uri === generatedV13ConnectorPrivateViewResourceUri ||
-      uri === generatedV13PathPrivateViewResourceUri ||
+      uri === generatedV13NestedConnectorPrivateViewResourceUri ||
       uri.endsWith("create_private_view")
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
@@ -859,8 +859,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Private View Generated v13 Widget", uri: generatedV13PrivateViewResourceUri },
     { name: "Excalidraw Connector Create View Generated v13 Widget", uri: generatedV13ConnectorCreateViewResourceUri },
     { name: "Excalidraw Connector Private View Generated v13 Widget", uri: generatedV13ConnectorPrivateViewResourceUri },
-    { name: "Excalidraw Path Create View Generated v13 Widget", uri: generatedV13PathCreateViewResourceUri },
-    { name: "Excalidraw Path Private View Generated v13 Widget", uri: generatedV13PathPrivateViewResourceUri },
+    { name: "Excalidraw Nested Connector Create View Generated v13 Widget", uri: generatedV13NestedConnectorCreateViewResourceUri },
+    { name: "Excalidraw Nested Connector Private View Generated v13 Widget", uri: generatedV13NestedConnectorPrivateViewResourceUri },
   ];
 
   const additionalContentAliasesForUri = (uri: string): string[] => {
