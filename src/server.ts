@@ -427,8 +427,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV13NestedConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
   const generatedV14CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
-  const generatedV14CreateViewOutputTemplateUri = `${generatedV14CreateViewResourceUri}?template=v17`;
-  const generatedV14PrivateViewOutputTemplateUri = `${generatedV14PrivateViewResourceUri}?template=v17`;
+  const generatedV14CreateViewOutputTemplateUri = `${generatedV14CreateViewResourceUri}_v18`;
+  const generatedV14PrivateViewOutputTemplateUri = `${generatedV14PrivateViewResourceUri}_v18`;
   const pathAndSearch = (uri: string) => {
     const url = new URL(uri);
     return `${url.pathname}${url.search}`;
@@ -832,7 +832,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uriWithoutQuery === generatedV14CreateViewResourceUri ||
       uri === generatedV14ConnectorCreateViewResourceUri ||
       uri === generatedV14NestedConnectorCreateViewResourceUri ||
-      uriWithoutQuery.endsWith("create_view")
+      uriWithoutQuery.endsWith("create_view") ||
+      uriWithoutQuery.endsWith("create_view_v18")
     ) return createViewWidgetMeta;
     if (
       uri === uiPrivateViewResourceUri ||
@@ -848,7 +849,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uriWithoutQuery === generatedV14PrivateViewResourceUri ||
       uri === generatedV14ConnectorPrivateViewResourceUri ||
       uri === generatedV14NestedConnectorPrivateViewResourceUri ||
-      uriWithoutQuery.endsWith("create_private_view")
+      uriWithoutQuery.endsWith("create_private_view") ||
+      uriWithoutQuery.endsWith("create_private_view_v18")
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
   };
@@ -887,8 +889,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Nested Connector Private View Generated v13 Widget", uri: generatedV13NestedConnectorPrivateViewResourceUri },
     { name: "Excalidraw Create View Generated v14 Widget", uri: generatedV14CreateViewResourceUri },
     { name: "Excalidraw Private View Generated v14 Widget", uri: generatedV14PrivateViewResourceUri },
-    { name: "Excalidraw Create View Generated v14 Widget v17", uri: generatedV14CreateViewOutputTemplateUri },
-    { name: "Excalidraw Private View Generated v14 Widget v17", uri: generatedV14PrivateViewOutputTemplateUri },
+    { name: "Excalidraw Create View Generated v14 Widget v18", uri: generatedV14CreateViewOutputTemplateUri },
+    { name: "Excalidraw Private View Generated v14 Widget v18", uri: generatedV14PrivateViewOutputTemplateUri },
     { name: "Excalidraw Connector Create View Generated v14 Widget", uri: generatedV14ConnectorCreateViewResourceUri },
     { name: "Excalidraw Connector Private View Generated v14 Widget", uri: generatedV14ConnectorPrivateViewResourceUri },
     { name: "Excalidraw Nested Connector Create View Generated v14 Widget", uri: generatedV14NestedConnectorCreateViewResourceUri },
@@ -955,8 +957,18 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       configUri: hostedCreateViewResourceUri,
     },
     {
+      name: "Excalidraw Generated Create View Widget v18",
+      uriTemplate: `${widgetDomain}/{appId}/{linkId}/create_view_v18`,
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
       name: "Excalidraw Generated Private View Widget",
       uriTemplate: `${widgetDomain}/{appId}/{linkId}/create_private_view`,
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Generated Private View Widget v18",
+      uriTemplate: `${widgetDomain}/{appId}/{linkId}/create_private_view_v18`,
       configUri: hostedPrivateViewResourceUri,
     },
     {
@@ -1021,7 +1033,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     },
   ];
 
-  const generatedResourceListFromRequest = (extra: any, toolName: "create_view" | "create_private_view") => {
+  const generatedResourceListFromRequest = (extra: any, toolName: "create_view" | "create_view_v18" | "create_private_view" | "create_private_view_v18") => {
     const headerValues = Object.values(extra?.requestInfo?.headers ?? {})
       .flat()
       .filter((value): value is string => typeof value === "string");
@@ -1046,7 +1058,13 @@ Use this to verify that a protected tool can coexist with public tools on the sa
         list: uriTemplate.includes("{appId}") && uriTemplate.includes("{linkId}")
           ? (extra) => generatedResourceListFromRequest(
             extra,
-            uriTemplate.endsWith("create_private_view") ? "create_private_view" : "create_view",
+            uriTemplate.endsWith("create_private_view_v18")
+              ? "create_private_view_v18"
+              : uriTemplate.endsWith("create_private_view")
+                ? "create_private_view"
+                : uriTemplate.endsWith("create_view_v18")
+                  ? "create_view_v18"
+                  : "create_view",
           )
           : undefined,
       }),
