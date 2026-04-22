@@ -1,5 +1,5 @@
 import { registerAppResource, registerAppTool, RESOURCE_MIME_TYPE } from "@modelcontextprotocol/ext-apps/server";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult, ReadResourceResult } from "@modelcontextprotocol/sdk/types.js";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
@@ -405,7 +405,7 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const templateVersion = "v8";
+  const templateVersion = "v9";
   const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
   const createViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
   const privateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
@@ -883,6 +883,14 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     registerAppResource(server, name, uri, widgetResourceConfigForUri(uri), async (requestedUri): Promise<ReadResourceResult> => {
       return readWidgetResource(requestedUri.toString());
     });
+    server.registerResource(
+      `${name} Template`,
+      new ResourceTemplate(uri, { list: undefined }),
+      widgetResourceConfigForUri(uri),
+      async (requestedUri): Promise<ReadResourceResult> => {
+        return readWidgetResource(requestedUri.toString());
+      },
+    );
   }
 
 }
