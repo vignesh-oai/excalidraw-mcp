@@ -802,6 +802,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "/asdk_app_69e80e26b36481918555f365fa65c191/link_69e80e4bf39c8191b5baafb2cb792aa3/create_private_view", uri: "ui://excalidraw/templates/mixed-final-link-create-private-view.html" },
     { name: "Excalidraw MCP Public Prod_create_view", uri: "ui://excalidraw/templates/public-prod-create-view.html" },
     { name: "Excalidraw MCP Public Prod_create_private_view", uri: "ui://excalidraw/templates/public-prod-create-private-view.html" },
+    { name: "/asdk_app_69e81b9b876481919c99cae9616aa4b1/link_69e822f3dc688191803b970e846f19e9/create_view", uri: "ui://excalidraw/templates/public-prod-link-create-view.html" },
+    { name: "/asdk_app_69e81b9b876481919c99cae9616aa4b1/link_69e822f3dc688191803b970e846f19e9/create_private_view", uri: "ui://excalidraw/templates/public-prod-link-create-private-view.html" },
   ];
 
   const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
