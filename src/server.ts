@@ -897,6 +897,43 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     );
   }
 
+  // ChatGPT's widget backend can request generated per-connection link paths
+  // such as /asdk_app_.../link_.../create_view. Match those paths dynamically
+  // so a newly-created app version does not need hardcoded aliases.
+  const generatedLinkResourceTemplates = [
+    {
+      name: "Excalidraw Generated Create View Widget",
+      uriTemplate: `${widgetDomain}/{appId}/{linkId}/create_view`,
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Generated Private View Widget",
+      uriTemplate: `${widgetDomain}/{appId}/{linkId}/create_private_view`,
+      configUri: hostedPrivateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Connector Create View Widget",
+      uriTemplate: "connectors://{appId}/{linkId}/create_view",
+      configUri: hostedCreateViewResourceUri,
+    },
+    {
+      name: "Excalidraw Connector Private View Widget",
+      uriTemplate: "connectors://{appId}/{linkId}/create_private_view",
+      configUri: hostedPrivateViewResourceUri,
+    },
+  ];
+
+  for (const { name, uriTemplate, configUri } of generatedLinkResourceTemplates) {
+    server.registerResource(
+      name,
+      new ResourceTemplate(uriTemplate, { list: undefined }),
+      widgetResourceConfigForUri(configUri),
+      async (requestedUri): Promise<ReadResourceResult> => {
+        return readWidgetResource(requestedUri.toString());
+      },
+    );
+  }
+
 }
 
 /**
