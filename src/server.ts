@@ -431,6 +431,10 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV14PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14CreateViewOutputTemplateUri = `${generatedV14CreateViewResourceUri}_v18`;
   const generatedV14PrivateViewOutputTemplateUri = `${generatedV14PrivateViewResourceUri}_v18`;
+  const generatedV17NamedCreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/Excalidraw+MCP+Public+Prod+v17+Fetch_create_view";
+  const generatedV17NamedPrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/Excalidraw+MCP+Public+Prod+v17+Fetch_create_private_view";
+  const generatedV17CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_view";
+  const generatedV17PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
   const generatedV14ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
@@ -907,6 +911,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       generatedV14PrivateViewResourceUri,
       generatedV14CreateViewOutputTemplateUri,
       generatedV14PrivateViewOutputTemplateUri,
+      generatedV17NamedCreateViewResourceUri,
+      generatedV17NamedPrivateViewResourceUri,
+      generatedV17CreateViewResourceUri,
+      generatedV17PrivateViewResourceUri,
       generatedV14ConnectorCreateViewResourceUri,
       generatedV14ConnectorPrivateViewResourceUri,
       generatedV14NestedConnectorCreateViewResourceUri,
