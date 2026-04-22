@@ -798,6 +798,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Diagram Widget", uri: resourceUri },
     { name: "Excalidraw MCP Mixed Final_create_view", uri: "ui://excalidraw/templates/mixed-final-create-view.html" },
     { name: "Excalidraw MCP Mixed Final_create_private_view", uri: "ui://excalidraw/templates/mixed-final-create-private-view.html" },
+    { name: "/asdk_app_69e80e26b36481918555f365fa65c191/link_69e80e4bf39c8191b5baafb2cb792aa3/create_view", uri: "ui://excalidraw/templates/mixed-final-link-create-view.html" },
+    { name: "/asdk_app_69e80e26b36481918555f365fa65c191/link_69e80e4bf39c8191b5baafb2cb792aa3/create_private_view", uri: "ui://excalidraw/templates/mixed-final-link-create-private-view.html" },
     { name: "Excalidraw MCP Public Prod_create_view", uri: "ui://excalidraw/templates/public-prod-create-view.html" },
     { name: "Excalidraw MCP Public Prod_create_private_view", uri: "ui://excalidraw/templates/public-prod-create-private-view.html" },
   ];
