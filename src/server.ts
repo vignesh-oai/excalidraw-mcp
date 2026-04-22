@@ -405,17 +405,22 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const resourceUri = "ui://excalidraw/mcp-app.html";
+  const createViewResourceUri = "ui://excalidraw/templates/create-view.html";
+  const privateViewResourceUri = "ui://excalidraw/templates/create-private-view.html";
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const widgetToolMeta = {
-    ui: { resourceUri },
-    "ui/resourceUri": resourceUri,
-    "openai/outputTemplate": resourceUri,
+  const makeWidgetToolMeta = (templateUri: string) => ({
+    ui: { resourceUri: templateUri },
+    "ui/resourceUri": templateUri,
+    "openai/outputTemplate": templateUri,
     "openai/toolInvocation/invoking": "Rendering Excalidraw diagram",
     "openai/toolInvocation/invoked": "Rendered Excalidraw diagram",
     "openai/widgetAccessible": true,
-  };
+  });
+  const widgetToolMeta = makeWidgetToolMeta(resourceUri);
+  const createViewWidgetMeta = makeWidgetToolMeta(createViewResourceUri);
+  const privateViewWidgetMeta = makeWidgetToolMeta(privateViewResourceUri);
 
-  const createDiagramResult = async (elements: string): Promise<CallToolResult> => {
+  const createDiagramResult = async (elements: string, toolMeta = createViewWidgetMeta): Promise<CallToolResult> => {
     if (elements.length > MAX_INPUT_BYTES) {
       return {
         content: [{ type: "text", text: `Elements input exceeds ${MAX_INPUT_BYTES} byte limit. Reduce the number of elements or use checkpoints to build incrementally.` }],
@@ -487,7 +492,7 @@ However, if the user wants to edit something on this diagram "${checkpointId}", 
   To remove elements, use: {"type":"delete","ids":"<id1>,<id2>"}${ratioHint}` }],
       structuredContent: { checkpointId },
       _meta: {
-        ...widgetToolMeta,
+        ...toolMeta,
         "openai/widgetSessionId": checkpointId,
       },
     };
@@ -559,11 +564,11 @@ Call read_me first to learn the element format.`,
       }),
       annotations: { readOnlyHint: true },
       _meta: {
-        ...widgetToolMeta,
+        ...createViewWidgetMeta,
         securitySchemes: PUBLIC_SECURITY_SCHEMES,
       },
     },
-    async ({ elements }): Promise<CallToolResult> => createDiagramResult(elements),
+    async ({ elements }): Promise<CallToolResult> => createDiagramResult(elements, createViewWidgetMeta),
   );
 
   // ============================================================
@@ -582,7 +587,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       }),
       annotations: { readOnlyHint: true },
       _meta: {
-        ...widgetToolMeta,
+        ...privateViewWidgetMeta,
         securitySchemes: PRIVATE_SECURITY_SCHEMES,
       },
     },
@@ -590,7 +595,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       const auth = await verifyWorkOSAuth(extra.requestInfo?.headers);
       if (!auth.ok) return authErrorResult(auth.message, auth.challenge);
 
-      const result = await createDiagramResult(elements);
+      const result = await createDiagramResult(elements, privateViewWidgetMeta);
       if (result.isError) return result;
 
       const displayName = auth.user.email ?? auth.user.name ?? auth.user.subject;
@@ -779,85 +784,62 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     },
   };
 
-  const widgetResourceConfig = {
-    mimeType: RESOURCE_MIME_TYPE,
-    description: "Interactive Excalidraw diagram widget with editing, checkpoint, and export controls.",
-    _meta: {
-      ...widgetToolMeta,
-      ...cspMeta,
-      ui: {
-        ...widgetToolMeta.ui,
-        ...cspMeta.ui,
-        prefersBorder: true,
-        permissions: { clipboardWrite: {} },
+  const metaForResourceUri = (uri: string) => {
+    if (uri === createViewResourceUri) return createViewWidgetMeta;
+    if (uri === privateViewResourceUri) return privateViewWidgetMeta;
+    return widgetToolMeta;
+  };
+
+  const widgetResourceConfigForUri = (uri: string) => {
+    const toolMeta = metaForResourceUri(uri);
+    return {
+      mimeType: RESOURCE_MIME_TYPE,
+      description: "Interactive Excalidraw diagram widget with editing, checkpoint, and export controls.",
+      _meta: {
+        ...toolMeta,
+        ...cspMeta,
+        ui: {
+          ...toolMeta.ui,
+          ...cspMeta.ui,
+          prefersBorder: true,
+          permissions: { clipboardWrite: {} },
+        },
       },
-    },
+    };
   };
 
   const widgetResourceAliases = [
     { name: "Excalidraw Diagram Widget", uri: resourceUri },
-    { name: "Excalidraw MCP Mixed Final_create_view", uri: "ui://excalidraw/templates/mixed-final-create-view.html" },
-    { name: "Excalidraw MCP Mixed Final_create_private_view", uri: "ui://excalidraw/templates/mixed-final-create-private-view.html" },
-    { name: "/asdk_app_69e80e26b36481918555f365fa65c191/link_69e80e4bf39c8191b5baafb2cb792aa3/create_view", uri: "ui://excalidraw/templates/mixed-final-link-create-view.html" },
-    { name: "/asdk_app_69e80e26b36481918555f365fa65c191/link_69e80e4bf39c8191b5baafb2cb792aa3/create_private_view", uri: "ui://excalidraw/templates/mixed-final-link-create-private-view.html" },
-    { name: "Excalidraw MCP Public Prod_create_view", uri: "ui://excalidraw/templates/public-prod-create-view.html" },
-    { name: "Excalidraw MCP Public Prod_create_private_view", uri: "ui://excalidraw/templates/public-prod-create-private-view.html" },
-    { name: "/asdk_app_69e81b9b876481919c99cae9616aa4b1/link_69e822f3dc688191803b970e846f19e9/create_view", uri: "ui://excalidraw/templates/public-prod-link-create-view.html" },
-    { name: "/asdk_app_69e81b9b876481919c99cae9616aa4b1/link_69e822f3dc688191803b970e846f19e9/create_private_view", uri: "ui://excalidraw/templates/public-prod-link-create-private-view.html" },
-    { name: "Excalidraw MCP Public Prod v2_create_view", uri: "ui://excalidraw/templates/public-prod-v2-create-view.html" },
-    { name: "Excalidraw MCP Public Prod v2_create_private_view", uri: "ui://excalidraw/templates/public-prod-v2-create-private-view.html" },
-    { name: "/asdk_app_69e833ff63188191b4db61589c37685f/link_69e8343a6fe881919edb2cefee633f0e/create_view", uri: "ui://excalidraw/templates/public-prod-v2-link-create-view.html" },
-    { name: "/asdk_app_69e833ff63188191b4db61589c37685f/link_69e8343a6fe881919edb2cefee633f0e/create_private_view", uri: "ui://excalidraw/templates/public-prod-v2-link-create-private-view.html" },
-    { name: "Excalidraw MCP Public Prod v4_create_view", uri: "ui://excalidraw/templates/public-prod-v4-create-view.html" },
-    { name: "Excalidraw MCP Public Prod v4_create_private_view", uri: "ui://excalidraw/templates/public-prod-v4-create-private-view.html" },
-    { name: "/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_view", uri: "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_view" },
-    { name: "/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view", uri: "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view" },
-  ];
-
-  const widgetCompatibilityResourceUris = [
-    "ui://excalidraw/templates/public-prod-v2-create-view.html",
-    "ui://excalidraw/templates/public-prod-v2-create-private-view.html",
-    "ui://excalidraw/templates/public-prod-v2-link-create-view.html",
-    "ui://excalidraw/templates/public-prod-v2-link-create-private-view.html",
-    "ui://excalidraw/templates/public-prod-v4-create-view.html",
-    "ui://excalidraw/templates/public-prod-v4-create-private-view.html",
-    "ui://excalidraw/templates/public-prod-v4-link-create-view.html",
-    "ui://excalidraw/templates/public-prod-v4-link-create-private-view.html",
-    "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_view",
-    "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view",
+    { name: "Excalidraw Create View Widget", uri: createViewResourceUri },
+    { name: "Excalidraw Private View Widget", uri: privateViewResourceUri },
   ];
 
   const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
       const html = await fs.readFile(path.join(distDir, "mcp-app.html"), "utf-8");
+      const toolMeta = metaForResourceUri(uri);
       const contentForUri = (contentUri: string) => ({
         uri: contentUri,
         mimeType: RESOURCE_MIME_TYPE,
         text: html,
         _meta: {
-          ...widgetToolMeta,
+          ...toolMeta,
           ...cspMeta,
           ui: {
-            ...widgetToolMeta.ui,
+            ...toolMeta.ui,
             ...cspMeta.ui,
             prefersBorder: true,
             permissions: { clipboardWrite: {} },
           },
         },
       });
-      const compatibilityContents = uri === resourceUri
-        ? widgetCompatibilityResourceUris.map(contentForUri)
-        : [];
       return {
-        contents: [
-          contentForUri(uri),
-          ...compatibilityContents,
-        ],
+        contents: [contentForUri(uri)],
       };
   };
 
-  // Register the shared widget under the canonical URI and app/tool aliases.
+  // Register the shared HTML under distinct template URIs for each render tool.
   for (const { name, uri } of widgetResourceAliases) {
-    registerAppResource(server, name, uri, widgetResourceConfig, async (requestedUri): Promise<ReadResourceResult> => {
+    registerAppResource(server, name, uri, widgetResourceConfigForUri(uri), async (requestedUri): Promise<ReadResourceResult> => {
       return readWidgetResource(requestedUri.toString());
     });
   }
