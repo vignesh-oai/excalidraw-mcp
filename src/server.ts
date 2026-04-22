@@ -440,8 +440,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     "openai/widgetAccessible": true,
   });
   const widgetToolMeta = makeWidgetToolMeta(resourceUri);
-  const createViewWidgetMeta = makeWidgetToolMeta(hostedCreateViewResourceUri);
-  const privateViewWidgetMeta = makeWidgetToolMeta(hostedPrivateViewResourceUri);
+  const createViewWidgetMeta = makeWidgetToolMeta(generatedV14CreateViewResourceUri);
+  const privateViewWidgetMeta = makeWidgetToolMeta(generatedV14PrivateViewResourceUri);
 
   const createDiagramResult = async (elements: string, toolMeta = createViewWidgetMeta): Promise<CallToolResult> => {
     if (elements.length > MAX_INPUT_BYTES) {
