@@ -417,6 +417,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const legacyV4PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e83d62807881918f8528b2190dd011/link_69e83d848ed881919484ef3aeca600bb/create_private_view";
   const generatedV7CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e85145c3ac8191a72b385f033d6d50/link_69e852ad6b8c819190bd4a8b48397386/create_view";
   const generatedV7PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e85145c3ac8191a72b385f033d6d50/link_69e852ad6b8c819190bd4a8b48397386/create_private_view";
+  const generatedV12CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e864a786948191a5813cbc495cf275/link_69e86502be7081919e4dd363571b53ed/create_view";
+  const generatedV12PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e864a786948191a5813cbc495cf275/link_69e86502be7081919e4dd363571b53ed/create_private_view";
   const makeWidgetToolMeta = (templateUri: string, uiResourceUri = templateUri) => ({
     ui: { resourceUri: uiResourceUri },
     "ui/resourceUri": uiResourceUri,
@@ -800,6 +802,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === legacyUiCreateViewResourceUri ||
       uri === legacyV4CreateViewResourceUri ||
       uri === generatedV7CreateViewResourceUri ||
+      uri === generatedV12CreateViewResourceUri ||
       uri.endsWith("create_view")
     ) return createViewWidgetMeta;
     if (
@@ -808,6 +811,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === legacyUiPrivateViewResourceUri ||
       uri === legacyV4PrivateViewResourceUri ||
       uri === generatedV7PrivateViewResourceUri ||
+      uri === generatedV12PrivateViewResourceUri ||
       uri.endsWith("create_private_view")
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
@@ -837,6 +841,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Private View Widget", uri: uiPrivateViewResourceUri },
     { name: "Excalidraw Create View Hosted Widget", uri: hostedCreateViewResourceUri },
     { name: "Excalidraw Private View Hosted Widget", uri: hostedPrivateViewResourceUri },
+    { name: "Excalidraw Create View Generated v12 Widget", uri: generatedV12CreateViewResourceUri },
+    { name: "Excalidraw Private View Generated v12 Widget", uri: generatedV12PrivateViewResourceUri },
   ];
 
   const additionalContentAliasesForUri = (uri: string): string[] => {
