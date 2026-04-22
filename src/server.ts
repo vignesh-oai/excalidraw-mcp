@@ -484,6 +484,10 @@ However, if the user wants to edit something on this diagram "${checkpointId}", 
   this will use same diagram state as the user currently sees, including any manual edits they made in fullscreen, allowing you to add elements on top.
   To remove elements, use: {"type":"delete","ids":"<id1>,<id2>"}${ratioHint}` }],
       structuredContent: { checkpointId },
+      _meta: {
+        ...widgetToolMeta,
+        "openai/widgetSessionId": checkpointId,
+      },
     };
   };
 
@@ -775,7 +779,20 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   registerAppResource(server,
     resourceUri,
     resourceUri,
-    { mimeType: RESOURCE_MIME_TYPE },
+    {
+      mimeType: RESOURCE_MIME_TYPE,
+      description: "Interactive Excalidraw diagram widget with editing, checkpoint, and export controls.",
+      _meta: {
+        ...widgetToolMeta,
+        ...cspMeta,
+        ui: {
+          ...widgetToolMeta.ui,
+          ...cspMeta.ui,
+          prefersBorder: true,
+          permissions: { clipboardWrite: {} },
+        },
+      },
+    },
     async (): Promise<ReadResourceResult> => {
       const html = await fs.readFile(path.join(distDir, "mcp-app.html"), "utf-8");
       return {
@@ -784,8 +801,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
           mimeType: RESOURCE_MIME_TYPE,
           text: html,
           _meta: {
+            ...widgetToolMeta,
             ...cspMeta,
             ui: {
+              ...widgetToolMeta.ui,
               ...cspMeta.ui,
               prefersBorder: true,
               permissions: { clipboardWrite: {} },
