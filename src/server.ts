@@ -810,24 +810,38 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "/asdk_app_69e833ff63188191b4db61589c37685f/link_69e8343a6fe881919edb2cefee633f0e/create_private_view", uri: "ui://excalidraw/templates/public-prod-v2-link-create-private-view.html" },
   ];
 
+  const widgetCompatibilityResourcePaths = [
+    "Excalidraw MCP Public Prod v2_create_view",
+    "Excalidraw MCP Public Prod v2_create_private_view",
+    "/asdk_app_69e833ff63188191b4db61589c37685f/link_69e8343a6fe881919edb2cefee633f0e/create_view",
+    "/asdk_app_69e833ff63188191b4db61589c37685f/link_69e8343a6fe881919edb2cefee633f0e/create_private_view",
+  ];
+
   const readWidgetResource = async (uri: string): Promise<ReadResourceResult> => {
       const html = await fs.readFile(path.join(distDir, "mcp-app.html"), "utf-8");
-      return {
-        contents: [{
-          uri,
-          mimeType: RESOURCE_MIME_TYPE,
-          text: html,
-          _meta: {
-            ...widgetToolMeta,
-            ...cspMeta,
-            ui: {
-              ...widgetToolMeta.ui,
-              ...cspMeta.ui,
-              prefersBorder: true,
-              permissions: { clipboardWrite: {} },
-            },
+      const contentForUri = (contentUri: string) => ({
+        uri: contentUri,
+        mimeType: RESOURCE_MIME_TYPE,
+        text: html,
+        _meta: {
+          ...widgetToolMeta,
+          ...cspMeta,
+          ui: {
+            ...widgetToolMeta.ui,
+            ...cspMeta.ui,
+            prefersBorder: true,
+            permissions: { clipboardWrite: {} },
           },
-        }],
+        },
+      });
+      const compatibilityContents = uri === resourceUri
+        ? widgetCompatibilityResourcePaths.map(contentForUri)
+        : [];
+      return {
+        contents: [
+          contentForUri(uri),
+          ...compatibilityContents,
+        ],
       };
   };
 
