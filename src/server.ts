@@ -904,8 +904,6 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     const generatedV14PrivateViewPath = pathAndSearch(generatedV14PrivateViewResourceUri);
     const generatedV14CreateViewVersionedPath = pathAndSearch(generatedV14CreateViewOutputTemplateUri);
     const generatedV14PrivateViewVersionedPath = pathAndSearch(generatedV14PrivateViewOutputTemplateUri);
-    const appDisplayName = "Excalidraw MCP Public Prod v14 Hosted";
-    const appDisplayNamePlus = appDisplayName.replaceAll(" ", "+");
     return [
       uiCreateViewResourceUri,
       uiCreateViewV18ResourceUri,
@@ -929,12 +927,6 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       generatedV14PrivateViewVersionedPath,
       generatedV14CreateViewVersionedPath.slice(1),
       generatedV14PrivateViewVersionedPath.slice(1),
-      `${appDisplayName}_create_view`,
-      `${appDisplayName}_create_private_view`,
-      `${appDisplayNamePlus}_create_view`,
-      `${appDisplayNamePlus}_create_private_view`,
-      `/${appDisplayName}_create_view`,
-      `/${appDisplayName}_create_private_view`,
     ];
   };
 
