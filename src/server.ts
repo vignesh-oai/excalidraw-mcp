@@ -409,6 +409,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
   const uiCreateViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
   const uiPrivateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;
+  const uiCreateViewV18ResourceUri = "ui://widget/excalidraw-create-view-v18.html";
+  const uiPrivateViewV18ResourceUri = "ui://widget/excalidraw-private-view-v18.html";
   const hostedCreateViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_view`;
   const hostedPrivateViewResourceUri = `${widgetDomain}/widget/${templateVersion}/create_private_view`;
   const legacyUiCreateViewResourceUri = "ui://excalidraw/templates/create-view.html";
@@ -447,7 +449,9 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   });
   const widgetToolMeta = makeWidgetToolMeta(resourceUri);
   const createViewWidgetMeta = makeWidgetToolMeta(uiCreateViewResourceUri);
+  const createViewV18WidgetMeta = makeWidgetToolMeta(uiCreateViewV18ResourceUri);
   const privateViewWidgetMeta = makeWidgetToolMeta(uiPrivateViewResourceUri);
+  const privateViewV18WidgetMeta = makeWidgetToolMeta(uiPrivateViewV18ResourceUri);
 
   const createDiagramResult = async (elements: string, toolMeta = createViewWidgetMeta): Promise<CallToolResult> => {
     if (elements.length > MAX_INPUT_BYTES) {
@@ -816,6 +820,13 @@ Use this to verify that a protected tool can coexist with public tools on the sa
 
   const metaForResourceUri = (uri: string) => {
     const uriWithoutQuery = uri.split("?")[0];
+    const isCreateViewUri =
+      /(?:^|[/_-])create[-_]view(?:[-_]v\d+)?(?:\.html)?$/.test(uriWithoutQuery);
+    const isPrivateViewUri =
+      /(?:^|[/_-])(?:create[-_])?private[-_]view(?:[-_]v\d+)?(?:\.html)?$/.test(uriWithoutQuery) ||
+      /(?:^|[/_])create_private_view(?:_v\d+)?$/.test(uriWithoutQuery);
+    if (uri === uiCreateViewV18ResourceUri) return createViewV18WidgetMeta;
+    if (uri === uiPrivateViewV18ResourceUri) return privateViewV18WidgetMeta;
     if (
       uri === uiCreateViewResourceUri ||
       uri === hostedCreateViewResourceUri ||
@@ -830,7 +841,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uriWithoutQuery === generatedV14CreateViewResourceUri ||
       uri === generatedV14ConnectorCreateViewResourceUri ||
       uri === generatedV14NestedConnectorCreateViewResourceUri ||
-      /(?:^|[/_])create_view(?:_v\d+)?$/.test(uriWithoutQuery)
+      isCreateViewUri
     ) return createViewWidgetMeta;
     if (
       uri === uiPrivateViewResourceUri ||
@@ -846,7 +857,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uriWithoutQuery === generatedV14PrivateViewResourceUri ||
       uri === generatedV14ConnectorPrivateViewResourceUri ||
       uri === generatedV14NestedConnectorPrivateViewResourceUri ||
-      /(?:^|[/_])create_private_view(?:_v\d+)?$/.test(uriWithoutQuery)
+      isPrivateViewUri
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
   };
@@ -872,7 +883,9 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   const widgetResourceAliases = [
     { name: "Excalidraw Diagram Widget", uri: resourceUri },
     { name: "Excalidraw Create View Widget", uri: uiCreateViewResourceUri },
+    { name: "Excalidraw Create View Widget v18", uri: uiCreateViewV18ResourceUri },
     { name: "Excalidraw Private View Widget", uri: uiPrivateViewResourceUri },
+    { name: "Excalidraw Private View Widget v18", uri: uiPrivateViewV18ResourceUri },
     { name: "Excalidraw Create View Hosted Widget", uri: hostedCreateViewResourceUri },
     { name: "Excalidraw Private View Hosted Widget", uri: hostedPrivateViewResourceUri },
     { name: "Excalidraw Create View Generated v12 Widget", uri: generatedV12CreateViewResourceUri },
@@ -902,7 +915,9 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     const appDisplayNamePlus = appDisplayName.replaceAll(" ", "+");
     return [
       uiCreateViewResourceUri,
+      uiCreateViewV18ResourceUri,
       uiPrivateViewResourceUri,
+      uiPrivateViewV18ResourceUri,
       hostedCreateViewResourceUri,
       hostedPrivateViewResourceUri,
       generatedV14CreateViewResourceUri,
