@@ -419,6 +419,10 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV7PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e85145c3ac8191a72b385f033d6d50/link_69e852ad6b8c819190bd4a8b48397386/create_private_view";
   const generatedV12CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e864a786948191a5813cbc495cf275/link_69e86502be7081919e4dd363571b53ed/create_view";
   const generatedV12PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e864a786948191a5813cbc495cf275/link_69e86502be7081919e4dd363571b53ed/create_private_view";
+  const generatedV13CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_view";
+  const generatedV13PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
+  const generatedV13ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_view";
+  const generatedV13ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
   const makeWidgetToolMeta = (templateUri: string, uiResourceUri = templateUri) => ({
     ui: { resourceUri: uiResourceUri },
     "ui/resourceUri": uiResourceUri,
@@ -803,6 +807,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === legacyV4CreateViewResourceUri ||
       uri === generatedV7CreateViewResourceUri ||
       uri === generatedV12CreateViewResourceUri ||
+      uri === generatedV13CreateViewResourceUri ||
+      uri === generatedV13ConnectorCreateViewResourceUri ||
       uri.endsWith("create_view")
     ) return createViewWidgetMeta;
     if (
@@ -812,6 +818,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       uri === legacyV4PrivateViewResourceUri ||
       uri === generatedV7PrivateViewResourceUri ||
       uri === generatedV12PrivateViewResourceUri ||
+      uri === generatedV13PrivateViewResourceUri ||
+      uri === generatedV13ConnectorPrivateViewResourceUri ||
       uri.endsWith("create_private_view")
     ) return privateViewWidgetMeta;
     return widgetToolMeta;
@@ -843,6 +851,10 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Private View Hosted Widget", uri: hostedPrivateViewResourceUri },
     { name: "Excalidraw Create View Generated v12 Widget", uri: generatedV12CreateViewResourceUri },
     { name: "Excalidraw Private View Generated v12 Widget", uri: generatedV12PrivateViewResourceUri },
+    { name: "Excalidraw Create View Generated v13 Widget", uri: generatedV13CreateViewResourceUri },
+    { name: "Excalidraw Private View Generated v13 Widget", uri: generatedV13PrivateViewResourceUri },
+    { name: "Excalidraw Connector Create View Generated v13 Widget", uri: generatedV13ConnectorCreateViewResourceUri },
+    { name: "Excalidraw Connector Private View Generated v13 Widget", uri: generatedV13ConnectorPrivateViewResourceUri },
   ];
 
   const additionalContentAliasesForUri = (uri: string): string[] => {
