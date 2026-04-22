@@ -405,7 +405,7 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
-  const templateVersion = "v15";
+  const templateVersion = "v16";
   const resourceUri = `ui://widget/excalidraw-mcp-${templateVersion}.html`;
   const uiCreateViewResourceUri = `ui://widget/excalidraw-create-view-${templateVersion}.html`;
   const uiPrivateViewResourceUri = `ui://widget/excalidraw-private-view-${templateVersion}.html`;

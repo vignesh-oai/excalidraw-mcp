@@ -6,7 +6,7 @@ const isDevelopment = process.env.NODE_ENV === "development";
 const widgetOrigin = "https://excalidraw-mcp-pearl-six.vercel.app";
 
 export default defineConfig({
-  base: `${widgetOrigin}/`,
+  base: `${widgetOrigin}/dist/`,
   plugins: [react()],
   build: {
     sourcemap: isDevelopment ? "inline" : undefined,
