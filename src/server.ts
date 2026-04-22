@@ -427,6 +427,8 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV13NestedConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86808cfe88191ba3efb0484e4b912/asdk_app_69e86808cfe88191ba3efb0484e4b912/link_69e8682e2c448191b6c87f235d33dea1/create_private_view";
   const generatedV14CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
+  const generatedV14CreateViewResourcePath = new URL(generatedV14CreateViewResourceUri).pathname;
+  const generatedV14PrivateViewResourcePath = new URL(generatedV14PrivateViewResourceUri).pathname;
   const generatedV14ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
@@ -888,8 +890,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
 
   const canonicalContentUriForUri = (uri: string): string => {
     const toolMeta = metaForResourceUri(uri);
-    if (toolMeta === createViewWidgetMeta) return generatedV14CreateViewResourceUri;
-    if (toolMeta === privateViewWidgetMeta) return generatedV14PrivateViewResourceUri;
+    if (toolMeta === createViewWidgetMeta) return generatedV14CreateViewResourcePath;
+    if (toolMeta === privateViewWidgetMeta) return generatedV14PrivateViewResourcePath;
     return uri;
   };
 
