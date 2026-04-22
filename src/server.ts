@@ -404,7 +404,7 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  * Shared between local (main.ts) and Vercel (api/mcp.ts) entry points.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
-  const resourceUri = "ui://excalidraw/mcp-app-v3.html";
+  const resourceUri = "ui://excalidraw/mcp-app.html";
   const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
   const widgetToolMeta = {
     ui: { resourceUri },
@@ -550,13 +550,14 @@ However, if the user wants to edit something on this diagram "${checkpointId}", 
     {
       title: "Draw Diagram",
       description: `Renders a hand-drawn diagram using Excalidraw elements.
-Elements stream in one by one with draw-on animations.`,
+Elements stream in one by one with draw-on animations.
+Call read_me first to learn the element format.`,
       inputSchema: z.object({
         elements: z.string().describe(
           "JSON array string of Excalidraw elements. Must be valid JSON — no comments, no trailing commas. Keep compact. Call read_me first for format reference."
         ),
       }),
-      annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
+      annotations: { readOnlyHint: true },
       _meta: {
         ...widgetToolMeta,
         securitySchemes: PUBLIC_SECURITY_SCHEMES,
@@ -579,7 +580,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
           "JSON array string of Excalidraw elements. Must be valid JSON — no comments, no trailing commas. Keep compact. Call read_me first for format reference."
         ),
       }),
-      annotations: { readOnlyHint: false, openWorldHint: false, destructiveHint: false },
+      annotations: { readOnlyHint: true },
       _meta: {
         ...widgetToolMeta,
         securitySchemes: PRIVATE_SECURITY_SCHEMES,
@@ -795,7 +796,6 @@ Use this to verify that a protected tool can coexist with public tools on the sa
 
   const widgetResourceAliases = [
     { name: "Excalidraw Diagram Widget", uri: resourceUri },
-    { name: "Excalidraw Diagram Widget v3", uri: resourceUri },
     { name: "Excalidraw MCP Mixed Final_create_view", uri: "ui://excalidraw/templates/mixed-final-create-view.html" },
     { name: "Excalidraw MCP Mixed Final_create_private_view", uri: "ui://excalidraw/templates/mixed-final-create-private-view.html" },
     { name: "/asdk_app_69e80e26b36481918555f365fa65c191/link_69e80e4bf39c8191b5baafb2cb792aa3/create_view", uri: "ui://excalidraw/templates/mixed-final-link-create-view.html" },
