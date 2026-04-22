@@ -439,6 +439,14 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
   const generatedV17ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
   const generatedV17NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_view";
   const generatedV17NestedConnectorPrivateViewResourceUri = "connectors://asdk_app_69e88515c0988191b75e5fe75244e71f/asdk_app_69e88515c0988191b75e5fe75244e71f/link_69e885397cb48191950244a7cc237d55/create_private_view";
+  const generatedV21NamedCreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/Excalidraw+MCP+Public+Prod+v21+Mixed_create_view";
+  const generatedV21NamedPrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/Excalidraw+MCP+Public+Prod+v21+Mixed_create_private_view";
+  const generatedV21CreateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_view";
+  const generatedV21PrivateViewResourceUri = "https://excalidraw-mcp-pearl-six.vercel.app/asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_private_view";
+  const generatedV21ConnectorNamedCreateViewResourceUri = "connectors://asdk_app_69e88f7829f48191858a6aeef740ccd2/Excalidraw+MCP+Public+Prod+v21+Mixed_create_view";
+  const generatedV21ConnectorNamedPrivateViewResourceUri = "connectors://asdk_app_69e88f7829f48191858a6aeef740ccd2/Excalidraw+MCP+Public+Prod+v21+Mixed_create_private_view";
+  const generatedV21ConnectorCreateViewResourceUri = "connectors://asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_view";
+  const generatedV21ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e88f7829f48191858a6aeef740ccd2/link_69e88f908c148191884136308a91ed99/create_private_view";
   const generatedV14ConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
   const generatedV14ConnectorPrivateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_private_view";
   const generatedV14NestedConnectorCreateViewResourceUri = "connectors://asdk_app_69e86c8e52c48191b77421c0bb2b71b7/asdk_app_69e86c8e52c48191b77421c0bb2b71b7/link_69e86cde6fe881919e537b98eb3d415c/create_view";
@@ -893,7 +901,32 @@ Use this to verify that a protected tool can coexist with public tools on the sa
     { name: "Excalidraw Private View Widget", uri: uiPrivateViewResourceUri },
   ];
 
-  const additionalContentAliasesForUri = (_uri: string): string[] => {
+  const additionalContentAliasesForUri = (uri: string): string[] => {
+    const uriWithoutQuery = uri.split("?")[0];
+    const isPrivate =
+      /(?:^|[/_-])(?:create[-_])?private[-_]view(?:[-_]v\d+)?(?:\.html)?$/.test(uriWithoutQuery) ||
+      /(?:^|[/_])create_private_view(?:_v\d+)?$/.test(uriWithoutQuery);
+    const isCreate =
+      /(?:^|[/_-])create[-_]view(?:[-_]v\d+)?(?:\.html)?$/.test(uriWithoutQuery);
+
+    if (isPrivate) {
+      return [
+        generatedV21NamedPrivateViewResourceUri,
+        generatedV21PrivateViewResourceUri,
+        generatedV21ConnectorNamedPrivateViewResourceUri,
+        generatedV21ConnectorPrivateViewResourceUri,
+      ];
+    }
+
+    if (isCreate) {
+      return [
+        generatedV21NamedCreateViewResourceUri,
+        generatedV21CreateViewResourceUri,
+        generatedV21ConnectorNamedCreateViewResourceUri,
+        generatedV21ConnectorCreateViewResourceUri,
+      ];
+    }
+
     return [];
   };
 
