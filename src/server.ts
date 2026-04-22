@@ -405,6 +405,7 @@ Use the Primary Colors from above — they're bright enough on dark backgrounds.
  */
 export function registerTools(server: McpServer, distDir: string, store: CheckpointStore): void {
   const resourceUri = "ui://excalidraw/mcp-app.html";
+  const widgetDomain = "https://excalidraw-mcp-pearl-six.vercel.app";
   const widgetToolMeta = {
     ui: { resourceUri },
     "openai/outputTemplate": resourceUri,
@@ -762,12 +763,14 @@ Use this to verify that a protected tool can coexist with public tools on the sa
   // CSP: allow Excalidraw to load fonts from esm.sh
   const cspMeta = {
     ui: {
+      domain: widgetDomain,
       csp: {
         resourceDomains: ["https://esm.sh"],
         connectDomains: ["https://esm.sh"],
       },
     },
     "openai/widgetDescription": "Interactive Excalidraw diagram widget with editing, checkpoint, and export controls.",
+    "openai/widgetDomain": widgetDomain,
     "openai/widgetPrefersBorder": true,
     "openai/widgetCSP": {
       resource_domains: ["https://esm.sh"],
