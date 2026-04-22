@@ -919,12 +919,8 @@ Use this to verify that a protected tool can coexist with public tools on the sa
       generatedV14ConnectorPrivateViewResourceUri,
       generatedV14NestedConnectorCreateViewResourceUri,
       generatedV14NestedConnectorPrivateViewResourceUri,
-      generatedV14CreateViewPath,
-      generatedV14PrivateViewPath,
       generatedV14CreateViewPath.slice(1),
       generatedV14PrivateViewPath.slice(1),
-      generatedV14CreateViewVersionedPath,
-      generatedV14PrivateViewVersionedPath,
       generatedV14CreateViewVersionedPath.slice(1),
       generatedV14PrivateViewVersionedPath.slice(1),
     ];
