@@ -555,7 +555,7 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     "read_me",
     {
       description: "Returns the Excalidraw element format reference with color palettes, examples, and tips. Call this BEFORE using create_view for the first time.",
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
       _meta: { securitySchemes: PUBLIC_SECURITY_SCHEMES },
     },
     async (): Promise<CallToolResult> => {
@@ -571,7 +571,7 @@ export function registerTools(server: McpServer, distDir: string, store: Checkpo
     {
       title: "Private Auth Status",
       description: "Protected diagnostic tool. Requires WorkOS AuthKit OAuth and returns the authenticated user context.",
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
       _meta: { securitySchemes: PRIVATE_SECURITY_SCHEMES },
     },
     async (extra): Promise<CallToolResult> => {
@@ -606,7 +606,7 @@ Call read_me first to learn the element format.`,
           "JSON array string of Excalidraw elements. Must be valid JSON — no comments, no trailing commas. Keep compact. Call read_me first for format reference."
         ),
       }),
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
       _meta: {
         ...createViewWidgetMeta,
         securitySchemes: PUBLIC_SECURITY_SCHEMES,
@@ -629,7 +629,7 @@ Use this to verify that a protected tool can coexist with public tools on the sa
           "JSON array string of Excalidraw elements. Must be valid JSON — no comments, no trailing commas. Keep compact. Call read_me first for format reference."
         ),
       }),
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false },
       _meta: {
         ...privateViewWidgetMeta,
         securitySchemes: PRIVATE_SECURITY_SCHEMES,
